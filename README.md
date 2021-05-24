@@ -1,2 +1,2 @@
-# JARVIS
-A desktop assistant for Windows and Linux machines.
+# Chat App [name TBD]
+A web app to allow for seamless chatting among friends.
