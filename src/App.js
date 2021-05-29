@@ -1,5 +1,6 @@
 import "./App.css";
 import React from "react";
+import axios from "axios";
 import { Button, TextField } from "@material-ui/core";
 
 function App() {
@@ -16,7 +17,10 @@ function App() {
           value={createSessionName}
           onChange={(e) => setCreateSessionName(e.target.value)}
         />
-        <Button onClick={() => console.log(createSessionName)}>Submit</Button>
+        <Button onClick={() => {
+          axios.post('http://localhost:5000/sessions/create', {})
+          .then(res => console.log(res.data));
+        }}>Submit</Button>
       </div>
       <div>
         <p>Join a session</p>
