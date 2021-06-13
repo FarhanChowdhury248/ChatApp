@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const mongoose = require('mongoose');
 
@@ -20,8 +21,10 @@ connection.once('open', () => {
 })
 
 const sessionsRouter = require('./controller/sessions');
+const participantsRouter = require('./controller/participants');
 
 app.use('/sessions', sessionsRouter);
+app.use('/participants', participantsRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);

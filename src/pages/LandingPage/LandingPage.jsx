@@ -3,10 +3,10 @@ import { useApi } from "../../shared/api";
 import { Button, TextField } from "@material-ui/core";
 
 export const LandingPage = () => {
-  const [createSessionName, setCreateSessionName] = React.useState("");
+  const [createParticipantName, setCreateParticipantName] = React.useState("");
   const [joinSession, setJoinSessionName] = React.useState("");
 
-  const { createSession } = useApi();
+  const { createSession, createParticipant } = useApi();
 
   return (
     <div>
@@ -15,11 +15,15 @@ export const LandingPage = () => {
       <div>
         <p>Create a session</p>
         <TextField
-          value={createSessionName}
-          onChange={(e) => setCreateSessionName(e.target.value)}
+          value={createParticipantName}
+          onChange={(e) => setCreateParticipantName(e.target.value)}
         />
         <Button
-          onClick={() => createSession().then((data) => console.log(data))}
+          onClick={() => {
+            //let hostId = await createParticipant(createParticipantName).then((data) => data._id);
+            //createSession(await createParticipant(createParticipantName).then((data) => data.id)).then((data) => console.log(data));
+            createParticipant(createParticipantName).then((data) => createSession(data.hostId).then((data) => console.log(data)));
+          }}
         >
           Submit
         </Button>
