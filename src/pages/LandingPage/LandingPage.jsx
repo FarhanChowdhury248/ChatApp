@@ -1,10 +1,9 @@
 import React from "react";
 import { useApi } from "../../shared/api";
-import bluePurpleImage from "../../assets/images/bg-01.jpg";
 import styled from "styled-components";
 import { Textfield } from "../../shared/components";
 import { LandingPageButton } from "./LandingPageButton";
-import { UserIcon } from "../../shared/icons";
+import { UserIcon, KeyIcon } from "../../shared/icons";
 
 export const LandingPage = () => {
   const [createSessionName, setCreateSessionName] = React.useState("");
@@ -13,11 +12,11 @@ export const LandingPage = () => {
   const { createSession } = useApi();
 
   return (
-    <Background bgImage={`url(${bluePurpleImage})`}>
+    <Background>
       <Container>
         <Pane>
           <HeaderText>Create a new session.</HeaderText>
-          <div style={{ margin: "5rem 0" }}>
+          <div style={{ margin: "5rem 0", marginBottom: "10rem" }}>
             <Textfield
               text={createSessionName}
               setText={setCreateSessionName}
@@ -34,12 +33,20 @@ export const LandingPage = () => {
             text="Create!"
           />
         </Pane>
-        <div style={{ height: "100%", padding: "1rem" }}></div>
+        <div
+          style={{
+            height: "75%",
+            margin: "1rem",
+            padding: "0.3rem",
+            backgroundColor: "#555555",
+          }}
+        ></div>
         <Pane>
           <HeaderText>Join a session</HeaderText>
           <div
             style={{
-              margin: "5rem 0",
+              margin: "2rem 0",
+              marginBottom: "5rem",
               display: "flex",
               flexDirection: "column",
             }}
@@ -50,10 +57,11 @@ export const LandingPage = () => {
               placeholder="Enter room code"
               icon={
                 <div style={{ padding: "0.3rem", paddingLeft: 0 }}>
-                  <UserIcon />
+                  <KeyIcon />
                 </div>
               }
             />
+            <div style={{ width: "100%", padding: "2rem" }}></div>
             <Textfield
               text={joinSessionName}
               setText={setJoinSessionName}
@@ -81,7 +89,7 @@ const Background = styled.div`
   left: 0;
   bottom: 0;
   right: 0;
-  background-image: ${({ bgImage }) => bgImage ?? "white"};
+  background-image: linear-gradient(90deg, #09d3df 0%, #ec0dfc 100%);
 `;
 
 const Container = styled.div`
