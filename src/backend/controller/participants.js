@@ -9,6 +9,12 @@ router.route('/').get((req, res) => {
   });
   
 router.route('/create').post((req, res) => {
+
+    if (req.body.userName === "") {
+        res.status(400).json("Error: username must not be empty");
+        return;
+    }
+
     const newParticipant = new Participant(
         {
         _id: mongoose.Types.ObjectId(),

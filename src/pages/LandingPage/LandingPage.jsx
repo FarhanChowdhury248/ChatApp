@@ -20,9 +20,7 @@ export const LandingPage = () => {
         />
         <Button
           onClick={() => {
-            //let hostId = await createParticipant(createParticipantName).then((data) => data._id);
-            //createSession(await createParticipant(createParticipantName).then((data) => data.id)).then((data) => console.log(data));
-            createParticipant(createParticipantName).then((data) => createSession(data.hostId).then((data) => console.log(data)));
+            if (createParticipantName !== "") createParticipant(createParticipantName).then((data) => createSession(data.hostId).then((data) => alert("Your session code is " + data.sessionCode)));
           }}
         >
           Submit
