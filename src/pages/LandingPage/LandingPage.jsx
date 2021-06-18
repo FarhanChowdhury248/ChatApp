@@ -7,6 +7,7 @@ import { UserIcon, KeyIcon } from "../../shared/icons";
 
 export const LandingPage = () => {
   const [createSessionName, setCreateSessionName] = React.useState("");
+  const [joinSessionCode, setJoinSessionCode] = React.useState("");
   const [joinSessionName, setJoinSessionName] = React.useState("");
 
   const { createSession } = useApi();
@@ -31,6 +32,7 @@ export const LandingPage = () => {
           <LandingPageButton
             onClick={() => createSession().then((data) => console.log(data))}
             text="Create!"
+            disabled={createSessionName.trim().length === 0}
           />
         </Pane>
         <div
@@ -40,7 +42,7 @@ export const LandingPage = () => {
             padding: "0.3rem",
             backgroundColor: "#555555",
           }}
-        ></div>
+        />
         <Pane>
           <HeaderText>Join a session</HeaderText>
           <div
@@ -52,8 +54,8 @@ export const LandingPage = () => {
             }}
           >
             <Textfield
-              text={joinSessionName}
-              setText={setJoinSessionName}
+              text={joinSessionCode}
+              setText={setJoinSessionCode}
               placeholder="Enter room code"
               icon={
                 <div style={{ padding: "0.3rem", paddingLeft: 0 }}>
@@ -76,6 +78,10 @@ export const LandingPage = () => {
           <LandingPageButton
             onClick={() => console.log(joinSessionName)}
             text="Join!"
+            disabled={
+              joinSessionCode.trim().length === 0 ||
+              joinSessionName.trim().length === 0
+            }
           />
         </Pane>
       </Container>
