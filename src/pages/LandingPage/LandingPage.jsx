@@ -6,7 +6,7 @@ export const LandingPage = () => {
   const [createParticipantName, setCreateParticipantName] = React.useState("");
   const [joinSession, setJoinSessionName] = React.useState("");
 
-  const { createSession, createParticipant } = useApi();
+  const { createSession } = useApi();
 
   return (
     <div>
@@ -20,7 +20,7 @@ export const LandingPage = () => {
         />
         <Button
           onClick={() => {
-            if (createParticipantName !== "") createParticipant(createParticipantName).then((data) => createSession(data.hostId).then((data) => alert("Your session code is " + data.sessionCode)));
+            if (createParticipantName !== "") createSession(createParticipantName).then((data) => alert("Your session code is " + data.sessionCode));
           }}
         >
           Submit

@@ -24,7 +24,7 @@ router.route('/create').post((req, res) => {
     );
 
     newParticipant.save()
-        .then(() => res.status(201).json({hostId: newParticipant._id.toString()}))
+        .then(() => res.status(201).json({participantId: newParticipant._id.toString()}))
         .catch(err => res.status(400).json('Error: ' + err));
 
 });
