@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { Textfield } from "../../shared/components";
 import { LandingPageButton } from "./LandingPageButton";
 import { UserIcon, KeyIcon } from "../../shared/icons";
+import { Link } from "../../shared/components";
+import { PATHS } from "../../shared/constants";
 
 export const LandingPage = () => {
   const [createSessionName, setCreateSessionName] = React.useState("");
@@ -29,11 +31,17 @@ export const LandingPage = () => {
               }
             />
           </div>
-          <LandingPageButton
-            onClick={() => createSession().then((data) => console.log(data))}
-            text="Create!"
-            disabled={createSessionName.trim().length === 0}
-          />
+          <Link to={PATHS.SESSION_PAGE}>
+            <LandingPageButton
+              onClick={() =>
+                createSession().then((data) => {
+                  console.log(data);
+                })
+              }
+              text="Create!"
+              disabled={createSessionName.trim().length === 0}
+            />
+          </Link>
         </Pane>
         <div
           style={{
