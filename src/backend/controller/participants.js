@@ -19,7 +19,7 @@ router.route('/create').post((req, res) => {
         {
         _id: mongoose.Types.ObjectId(),
         name: req.body.userName,
-        role: "Host"
+        role: req.body.role
         }
     );
 

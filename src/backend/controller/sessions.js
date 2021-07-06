@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const generateUniqueId = require('generate-unique-id');
-let Session = require('../models/session.model');
+const Session = require('../models/session.model');
+const Participant = require('../models/participant.model');
 
 router.route('/').get((req, res) => {
   Session.find()
@@ -11,19 +12,38 @@ router.route('/').get((req, res) => {
 
 router.route('/create').post((req, res) => {
 
-  const newSession = new Session(
-    {
+  const newHost = async () => {
+    
+    const newHost = new Participant(
+      {
       _id: mongoose.Types.ObjectId(),
-      sessionCode: generateUniqueId({
-        length: 6 
-      }).toString(),
-      members: [req.body.hostId]
-    }
-  );
+      name: req.body.userName,
+      role: "Host"
+      }
+    );
 
-  newSession.save()
+    const hostId = await newHost.save().then(() => newHost._id);
+    return hostId;
+  }
+
+  (async () => {
+    const newHostId = await newHost();
+
+    const newSession = new Session(
+      {
+        _id: mongoose.Types.ObjectId(),
+        sessionCode: generateUniqueId({
+          length: 6 
+        }).toString(),
+        members: [newHostId]
+      }
+    );
+  
+    newSession.save()
     .then(() => res.status(201).json({sessionCode: newSession.sessionCode}))
     .catch(err => res.status(400).json('Error: ' + err));
+  
+  })()
 
 });
 
