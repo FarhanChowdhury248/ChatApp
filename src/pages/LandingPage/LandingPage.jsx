@@ -34,7 +34,7 @@ export const LandingPage = () => {
           <Link to={PATHS.SESSION_PAGE}>
             <LandingPageButton
               onClick={() =>
-                createSession().then((data) => {
+                createSession(createSessionName).then((data) => {
                   console.log(data);
                 })
               }
