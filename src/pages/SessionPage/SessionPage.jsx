@@ -1,6 +1,7 @@
 import React from "react";
 import './SessionPage.css';
 import styled from "styled-components";
+import { ParticipantCard } from "./ParticipantCard";
 
 export const SessionPage = () => {
   return (
@@ -9,6 +10,9 @@ export const SessionPage = () => {
       <h1 className="info-element1">Users: </h1>
       <h1 className="info-element-main">Welcome to WeChat</h1>
       <h1 className="info-element2">Room Code: </h1>
+    </div>
+    <div className="participants-container">
+      <ParticipantCard username="Jack" />
     </div>
   </Background>
   );

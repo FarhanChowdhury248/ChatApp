@@ -1,0 +1,32 @@
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  width: 13rem;
+  height: 10rem;
+}
+
+.profilePicContainer {
+  background-color: #dedddd;
+  border-color: blue;
+  border-width: 500px;
+  border-top-left-radius: 5%;
+  border-top-right-radius: 5%;
+}
+
+.profilePic {
+  border-radius: 50%;
+  border: solid;
+  width: 8rem;
+  height: 8rem;
+  margin-left: 2rem;
+}
+
+.usernameContainer {
+  font-size: 25pt;
+  text-align: center;
+  background-color: white;
+  border: solid black;
+  border-width: 0.2rem;
+  border-bottom-left-radius: 8%;
+  border-bottom-right-radius: 8%;
+}
