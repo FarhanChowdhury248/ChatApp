@@ -11,7 +11,6 @@ export const LandingPage = () => {
   const [createSessionName, setCreateSessionName] = React.useState("");
   const [joinSessionCode, setJoinSessionCode] = React.useState("");
   const [joinSessionName, setJoinSessionName] = React.useState("");
-
   const { createSession } = useApi();
 
   return (

@@ -4,6 +4,9 @@ import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 
 export const SessionPage = () => {
+  // const [sessionCode, setSessionCode] = React.useState("");
+  // const [sessionId, setSessionId] = React.useState("");
+
   return (
   <Background>
     <div className="top-info-bar">
@@ -12,7 +15,7 @@ export const SessionPage = () => {
       <h1 className="info-element2">Room Code: </h1>
     </div>
     <div className="participants-container">
-      <ParticipantCard username="Jack" />
+      <ParticipantCard username="Fisstechfisstech" />
     </div>
   </Background>
   );

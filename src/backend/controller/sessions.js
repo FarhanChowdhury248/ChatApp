@@ -40,7 +40,7 @@ router.route('/create').post((req, res) => {
     );
   
     newSession.save()
-    .then(() => res.status(201).json({sessionCode: newSession.sessionCode}))
+    .then(() => res.status(201).json({sessionCode: newSession.sessionCode, sessionId: newSession._id}))
     .catch(err => res.status(400).json('Error: ' + err));
   
   })()
