@@ -1,29 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 
 export const SessionPage = ({ sessionData }) => {
-  console.log(sessionData);
+  useEffect(() => {
+    console.log(sessionData);
+  }, [sessionData]);
 
-  const getParticipantCards = () => {
-    const cards = [];
-    for (let i = 0; i < 20; i++)
-      cards.push(
-        <CardContainer key={i}>
-          <ParticipantCard label={"Fisstech " + i} />
-        </CardContainer>
-      );
-    return cards;
-  };
+  const getParticipantCards = () =>
+    sessionData.participants.map((user, i) => (
+      <CardContainer key={i}>
+        <ParticipantCard label={user.name} />
+      </CardContainer>
+    ));
+
+  if (!sessionData) return null;
 
   return (
     <Container>
       <Banner>
-        <BannerText>Users: 4</BannerText>
+        <BannerText>{"Users: " + sessionData.participants.length}</BannerText>
         <BannerText style={{ fontSize: "2rem", lineHeight: "2rem" }}>
           Welcome to WeChat
         </BannerText>
-        <BannerText>Room Code: XG9F2L</BannerText>
+        <BannerText>{"Room Code: " + sessionData.sessionCode}</BannerText>
       </Banner>
       <CardsContainer>{getParticipantCards()}</CardsContainer>
     </Container>

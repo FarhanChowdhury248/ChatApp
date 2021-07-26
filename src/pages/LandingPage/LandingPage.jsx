@@ -10,7 +10,7 @@ import { PATHS } from "../../shared/constants";
 const MyLink = ({ children, path, condition }) =>
   condition ? <Link to={path}>{children}</Link> : children;
 
-export const LandingPage = () => {
+export const LandingPage = ({ setSessionData }) => {
   const [createSessionName, setCreateSessionName] = React.useState("");
   const [joinSessionCode, setJoinSessionCode] = React.useState("");
   const [joinSessionName, setJoinSessionName] = React.useState("");
@@ -40,7 +40,7 @@ export const LandingPage = () => {
             <LandingPageButton
               onClick={() =>
                 createSession(createSessionName).then((data) => {
-                  console.log(data);
+                  setSessionData(data);
                 })
               }
               text="Create!"
