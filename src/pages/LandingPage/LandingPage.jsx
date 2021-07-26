@@ -7,9 +7,6 @@ import { UserIcon, KeyIcon } from "../../shared/icons";
 import { Link } from "../../shared/components";
 import { PATHS } from "../../shared/constants";
 
-const MyLink = ({ children, path, condition }) =>
-  condition ? <Link to={path}>{children}</Link> : children;
-
 export const LandingPage = ({ setSessionData }) => {
   const [createSessionName, setCreateSessionName] = React.useState("");
   const [joinSessionCode, setJoinSessionCode] = React.useState("");
@@ -33,8 +30,8 @@ export const LandingPage = ({ setSessionData }) => {
               }
             />
           </div>
-          <MyLink
-            path={PATHS.SESSION_PAGE}
+          <Link
+            to={PATHS.SESSION_PAGE}
             condition={createSessionName.trim().length !== 0}
           >
             <LandingPageButton
@@ -46,7 +43,7 @@ export const LandingPage = ({ setSessionData }) => {
               text="Create!"
               disabled={createSessionName.trim().length === 0}
             />
-          </MyLink>
+          </Link>
         </Pane>
         <div
           style={{
