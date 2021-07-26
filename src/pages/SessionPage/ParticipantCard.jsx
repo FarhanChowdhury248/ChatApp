@@ -1,11 +1,44 @@
-import React from 'react';
-import './ParticipantCard.css';
+import React from "react";
+import styled from "styled-components";
+import UserImage from "../../assets/images/profilePic.png";
 
-export const ParticipantCard = (props) => {
-	return (
-		<div className="cardContainer">
-			<div className="profilePicContainer"><img className="profilePic" src="../../assets/images/profilePic.png" alt="Profile"></img></div>
-			<span className="usernameContainer">{props.username}</span>
-		</div>
-	);
-}
+export const ParticipantCard = ({ label }) => {
+  return (
+    <Container>
+      <ImageContainer>
+        <img src={UserImage} alt="Profile" />
+      </ImageContainer>
+      <LabelContainer>
+        <Label>{label}</Label>
+      </LabelContainer>
+    </Container>
+  );
+};
+
+const Container = styled.div`
+  max-width: 18rem;
+`;
+
+const ImageContainer = styled.div`
+  background: #dedddd;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+  border-radius: 1rem 1rem 0px 0px;
+  border: 0.1rem solid #777777;
+`;
+
+const LabelContainer = styled.div`
+  background: #ffffff;
+  border: 0.1rem solid #777777;
+  border-top: none;
+  box-sizing: border-box;
+  border-radius: 0px 0px 1rem 1rem;
+  padding: 1rem;
+`;
+
+const Label = styled.p`
+  font-size: 2rem;
+  margin: 0;
+  color: #333333;
+`;
