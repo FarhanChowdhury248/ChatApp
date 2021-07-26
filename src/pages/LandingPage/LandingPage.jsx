@@ -7,11 +7,13 @@ import { UserIcon, KeyIcon } from "../../shared/icons";
 import { Link } from "../../shared/components";
 import { PATHS } from "../../shared/constants";
 
-export const LandingPage = () => {
+const MyLink = ({ children, path, condition }) =>
+  condition ? <Link to={path}>{children}</Link> : children;
+
+export const LandingPage = ({ setSessionData }) => {
   const [createSessionName, setCreateSessionName] = React.useState("");
   const [joinSessionCode, setJoinSessionCode] = React.useState("");
   const [joinSessionName, setJoinSessionName] = React.useState("");
-
   const { createSession } = useApi();
 
   return (
@@ -31,17 +33,20 @@ export const LandingPage = () => {
               }
             />
           </div>
-          <Link to={PATHS.SESSION_PAGE}>
+          <MyLink
+            path={PATHS.SESSION_PAGE}
+            condition={createSessionName.trim().length !== 0}
+          >
             <LandingPageButton
               onClick={() =>
                 createSession(createSessionName).then((data) => {
-                  console.log(data);
+                  setSessionData(data);
                 })
               }
               text="Create!"
               disabled={createSessionName.trim().length === 0}
             />
-          </Link>
+          </MyLink>
         </Pane>
         <div
           style={{
