@@ -44,7 +44,6 @@ const getRoomParticipants = async (sessionId) => {
     const member = await Participant.findById(id).exec();
     participants.push(member);
   }
-  console.log(participants);
   return participants;
 };
 

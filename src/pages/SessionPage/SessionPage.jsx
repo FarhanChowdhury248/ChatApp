@@ -13,22 +13,15 @@ export const SessionPage = ({ sessionData }) => {
     const newSocket = io.connect("http://localhost:5000", {
       transports: ["websocket"],
     });
-    console.log(newSocket);
 
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
-      participantId: sessionData.participantId,
     });
 
-    newSocket.on("updateParticipants", ({ participants }) => {
-      console.log(participants);
-      setParticipants(participants);
-    });
+    newSocket.on("updateParticipants", ({ participants }) =>
+      setParticipants(participants)
+    );
     setSocket(newSocket);
-  }, [sessionData]);
-
-  useEffect(() => {
-    console.log(sessionData);
   }, [sessionData]);
 
   const getParticipantCards = () =>

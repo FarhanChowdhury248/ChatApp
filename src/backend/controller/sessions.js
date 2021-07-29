@@ -19,11 +19,11 @@ router.route("/create").post((req, res) => {
     });
 
     const newHostId = await newHost.save().then(() => newHost._id);
-    return { newHostId, newHost };
+    return { newHostId };
   };
 
   (async () => {
-    const { newHostId, newHost } = await createHost();
+    const { newHostId } = await createHost();
 
     const newSession = new Session({
       _id: mongoose.Types.ObjectId(),
