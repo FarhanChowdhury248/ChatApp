@@ -18,8 +18,8 @@ router.route("/create").post((req, res) => {
       role: "Host",
     });
 
-    const hostId = await newHost.save().then(() => newHost._id);
-    return { hostId, newHost };
+    const newHostId = await newHost.save().then(() => newHost._id);
+    return { newHostId, newHost };
   };
 
   (async () => {
@@ -39,7 +39,7 @@ router.route("/create").post((req, res) => {
         res.status(201).json({
           sessionCode: newSession.sessionCode,
           sessionId: newSession._id,
-          participants: [newHost],
+          participantId: newHostId,
         })
       )
       .catch((err) => res.status(400).json("Error: " + err));
