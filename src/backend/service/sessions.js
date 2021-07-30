@@ -5,7 +5,7 @@ const getAllSessions = async () => ({
 });
 
 const createSession = async (username) => {
-  if (username.length === 0)
+  if (!username || username.length === 0)
     throw new Error("Invalid username. Username must be non-empty string.");
 
   const newHost = await sessionDatabase.createUser(username, "Host");
@@ -19,9 +19,9 @@ const createSession = async (username) => {
 };
 
 const joinSessionParticipant = async (username, sessionCode) => {
-  if (username.length === 0)
+  if (!username || username.length === 0)
     throw new Error("Invalid username. Username must be non-empty string.");
-  if (sessionCode.length === 0)
+  if (!sessionCode || sessionCode.length === 0)
     throw new Error(
       "Invalid session code. Session code must be non-empty string."
     );

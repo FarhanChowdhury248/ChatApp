@@ -20,7 +20,7 @@ router.route("/create").post(async (req, res) => {
     const newSessionData = await createSession(userName);
     res.status(200).json(newSessionData);
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json(err.name + ": " + err.message);
   }
 });
 
@@ -33,7 +33,7 @@ router.route("/join").put(async (req, res) => {
     );
     res.status(200).json(joinedSessionData);
   } catch (err) {
-    res.status(400).json(err);
+    res.status(400).json(err.name + ": " + err.message);
   }
 });
 
