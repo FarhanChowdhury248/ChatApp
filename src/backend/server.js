@@ -54,8 +54,10 @@ io.on("connection", (socket) => {
     const roomName = getRoomName(sessionId);
     socket.join(roomName);
 
-    socket.emit("updateParticipants", {
-      participants: await getRoomParticipants(sessionId),
+    const participants = await getRoomParticipants(sessionId);
+
+    io.to(roomName).emit("updateParticipants", {
+      participants,
     });
   });
 });

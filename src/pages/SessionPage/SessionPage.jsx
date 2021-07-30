@@ -18,11 +18,15 @@ export const SessionPage = ({ sessionData }) => {
       sessionId: sessionData.sessionId,
     });
 
-    newSocket.on("updateParticipants", ({ participants }) =>
-      setParticipants(participants)
-    );
     setSocket(newSocket);
   }, [sessionData]);
+
+  useEffect(() => {
+    socket &&
+      socket.on("updateParticipants", ({ participants }) =>
+        setParticipants(participants)
+      );
+  }, [socket]);
 
   const getParticipantCards = () =>
     participants.map((participant, i) => (
