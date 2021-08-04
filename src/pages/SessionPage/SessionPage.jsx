@@ -19,6 +19,8 @@ export const SessionPage = ({ sessionData }) => {
     });
 
     setSocket(newSocket);
+
+    return () => newSocket.disconnect();
   }, [sessionData]);
 
   useEffect(() => {

@@ -1,20 +1,8 @@
 const mongoose = require("mongoose");
 const generateUniqueId = require("generate-unique-id");
 const Session = require("../models/session.model");
-const Participant = require("../models/participant.model");
 
 const getAllSessions = async () => await Session.find().exec();
-
-const createUser = async (username, role = "Guest") => {
-  const newUser = new Participant({
-    _id: mongoose.Types.ObjectId(),
-    name: username,
-    role,
-  });
-
-  await newUser.save();
-  return newUser;
-};
 
 const createSession = async (hostId) => {
   const newSession = new Session({
@@ -42,7 +30,6 @@ const addSessionparticipant = async (sessionCode, newParticipant) => {
 
 module.exports = {
   getAllSessions,
-  createUser,
   createSession,
   getSession,
   addSessionparticipant,
