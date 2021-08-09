@@ -4,14 +4,18 @@ import styled from "styled-components";
 import { Textfield } from "../../shared/components";
 import { LandingPageButton } from "./LandingPageButton";
 import { UserIcon, KeyIcon } from "../../shared/icons";
-import { Link } from "../../shared/components";
 import { PATHS } from "../../shared/constants";
+import { LandingPageDialog } from "./LandingPageDialog";
+import { useHistory } from "react-router-dom";
 
 export const LandingPage = ({ setSessionData }) => {
   const [createSessionName, setCreateSessionName] = React.useState("");
   const [joinSessionCode, setJoinSessionCode] = React.useState("");
   const [joinSessionName, setJoinSessionName] = React.useState("");
-  const { createSession } = useApi();
+  const { createSession, joinSession } = useApi();
+  const history = useHistory();
+
+  const [showModal, setShowModal] = React.useState(false);
 
   return (
     <Background>
@@ -30,20 +34,16 @@ export const LandingPage = ({ setSessionData }) => {
               }
             />
           </div>
-          <Link
-            to={PATHS.SESSION_PAGE}
-            condition={createSessionName.trim().length !== 0}
-          >
-            <LandingPageButton
-              onClick={() =>
-                createSession(createSessionName).then((data) => {
-                  setSessionData(data);
-                })
-              }
-              text="Create!"
-              disabled={createSessionName.trim().length === 0}
-            />
-          </Link>
+          <LandingPageButton
+            onClick={() =>
+              createSession(createSessionName).then((data) => {
+                setSessionData(data);
+                history.push(PATHS.SESSION_PAGE);
+              })
+            }
+            text="Create!"
+            disabled={createSessionName.trim().length === 0}
+          />
         </Pane>
         <div
           style={{
@@ -86,12 +86,24 @@ export const LandingPage = ({ setSessionData }) => {
             />
           </div>
           <LandingPageButton
-            onClick={() => console.log(joinSessionName)}
+            onClick={() => {
+              joinSession(joinSessionName, joinSessionCode).then((data) => {
+                if (!data) setShowModal(true);
+                else {
+                  setSessionData(data);
+                  history.push(PATHS.SESSION_PAGE);
+                }
+              });
+            }}
             text="Join!"
             disabled={
               joinSessionCode.trim().length === 0 ||
               joinSessionName.trim().length === 0
             }
+          />
+          <LandingPageDialog
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
           />
         </Pane>
       </Container>

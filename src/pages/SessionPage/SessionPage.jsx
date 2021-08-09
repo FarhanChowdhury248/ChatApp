@@ -1,16 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
+import io from "socket.io-client";
 
 export const SessionPage = ({ sessionData }) => {
+  const [socket, setSocket] = useState(null);
+  const [participants, setParticipants] = useState([]);
+
   useEffect(() => {
-    console.log(sessionData);
+    if (!sessionData) return;
+
+    const newSocket = io.connect("http://localhost:5000", {
+      transports: ["websocket"],
+    });
+
+    newSocket.emit("joinRoom", {
+      sessionId: sessionData.sessionId,
+    });
+
+    setSocket(newSocket);
+
+    return () => newSocket.disconnect();
   }, [sessionData]);
 
+  useEffect(() => {
+    socket &&
+      socket.on("updateParticipants", ({ participants }) =>
+        setParticipants(participants)
+      );
+  }, [socket]);
+
   const getParticipantCards = () =>
-    sessionData.participants.map((user, i) => (
+    participants.map((participant, i) => (
       <CardContainer key={i}>
-        <ParticipantCard label={user.name} />
+        <ParticipantCard label={participant.name} />
       </CardContainer>
     ));
 
@@ -19,7 +42,7 @@ export const SessionPage = ({ sessionData }) => {
   return (
     <Container>
       <Banner>
-        <BannerText>{"Users: " + sessionData.participants.length}</BannerText>
+        <BannerText>{"Users: " + participants.length}</BannerText>
         <BannerText style={{ fontSize: "2rem", lineHeight: "2rem" }}>
           Welcome to WeChat
         </BannerText>

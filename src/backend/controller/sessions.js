@@ -1,49 +1,40 @@
 const router = require("express").Router();
-const mongoose = require("mongoose");
-const generateUniqueId = require("generate-unique-id");
-const Session = require("../models/session.model");
-const Participant = require("../models/participant.model");
+const {
+  getAllSessions,
+  createSession,
+  joinSessionParticipant,
+} = require("../service/sessions");
 
-router.route("/").get((req, res) => {
-  Session.find()
-    .then((sessions) => res.json(sessions))
-    .catch((err) => res.status(400).json("Error: " + err));
+router.route("/").get(async (req, res) => {
+  try {
+    const sessions = await getAllSessions();
+    res.status(200).json(sessions);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 });
 
-router.route("/create").post((req, res) => {
-  const createHost = async () => {
-    const newHost = new Participant({
-      _id: mongoose.Types.ObjectId(),
-      name: req.body.userName,
-      role: "Host",
-    });
+router.route("/create").post(async (req, res) => {
+  try {
+    const { userName } = req.body;
+    const newSessionData = await createSession(userName);
+    res.status(200).json(newSessionData);
+  } catch (err) {
+    res.status(400).json(err.name + ": " + err.message);
+  }
+});
 
-    const hostId = await newHost.save().then(() => newHost._id);
-    return { hostId, newHost };
-  };
-
-  (async () => {
-    const { newHostId, newHost } = await createHost();
-
-    const newSession = new Session({
-      _id: mongoose.Types.ObjectId(),
-      sessionCode: generateUniqueId({
-        length: 6,
-      }).toString(),
-      members: [newHostId],
-    });
-
-    newSession
-      .save()
-      .then(() =>
-        res.status(201).json({
-          sessionCode: newSession.sessionCode,
-          sessionId: newSession._id,
-          participants: [newHost],
-        })
-      )
-      .catch((err) => res.status(400).json("Error: " + err));
-  })();
+router.route("/join").put(async (req, res) => {
+  try {
+    const { sessionCode, username } = req.body;
+    const joinedSessionData = await joinSessionParticipant(
+      username,
+      sessionCode
+    );
+    res.status(200).json(joinedSessionData);
+  } catch (err) {
+    res.status(400).json(err.name + ": " + err.message);
+  }
 });
 
 module.exports = router;
