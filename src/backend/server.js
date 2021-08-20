@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 const sessionsRouter = require("./controller/sessions");
 const participantsRouter = require("./controller/participants");
+const chatRouter = require("./controller/chats");
 
 const { setupSockets } = require("./sockets");
 
@@ -23,6 +24,7 @@ connection.once("open", () => {
 
 app.use("/sessions", sessionsRouter);
 app.use("/participants", participantsRouter);
+app.use("/chats", chatRouter);
 
 const server = app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
