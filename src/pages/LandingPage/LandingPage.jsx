@@ -37,6 +37,7 @@ export const LandingPage = ({ setSessionData }) => {
           <LandingPageButton
             onClick={() =>
               createSession(createSessionName).then((data) => {
+                window.sessionStorage.setItem("current_username", createSessionName);
                 setSessionData(data);
                 history.push(PATHS.SESSION_PAGE);
               })

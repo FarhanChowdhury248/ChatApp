@@ -1,6 +1,17 @@
 import React from "react";
 import styled from "styled-components";
 import UserImage from "../../assets/images/profilePic.png";
+import { BsFillPersonFill } from "react-icons/bs";
+
+function CurrentUserCard(props) {
+  const currentUser = window.sessionStorage.getItem("current_username") === props.username;
+  if (currentUser) {
+    return <IconContainer>
+      <BsFillPersonFill size={15}></BsFillPersonFill>
+    </IconContainer>
+  }
+  return null;
+}
 
 export const ParticipantCard = ({ label }) => {
   return (
@@ -9,6 +20,7 @@ export const ParticipantCard = ({ label }) => {
         <img src={UserImage} alt="Profile" />
       </ImageContainer>
       <LabelContainer>
+        <CurrentUserCard username={label} />
         <Label>{label}</Label>
       </LabelContainer>
     </Container>
@@ -17,6 +29,11 @@ export const ParticipantCard = ({ label }) => {
 
 const Container = styled.div`
   max-width: 18rem;
+`;
+
+const IconContainer = styled.div`
+  margin-top: 0.9rem;
+  margin-right: 1rem;
 `;
 
 const ImageContainer = styled.div`
@@ -29,6 +46,8 @@ const ImageContainer = styled.div`
 `;
 
 const LabelContainer = styled.div`
+  display: flex;
+  flex-direction: row;
   background: #ffffff;
   border: 0.1rem solid #777777;
   border-top: none;
