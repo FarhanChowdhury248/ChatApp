@@ -65,6 +65,13 @@ const setupSockets = (server) => {
         });
       });
     });
+
+    socket.on("updateChat", async ({ updateType, id, updateData }) => {
+      await updateChat(id, updateType, updateData);
+
+      const roomName = getChatName(id);
+      io.in(roomName).emit("updatedChat", { updateType, updateData, id });
+    });
   });
 };
 
