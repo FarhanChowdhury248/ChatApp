@@ -16,6 +16,7 @@ export const SessionPage = ({ sessionData }) => {
 
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
+      participantId: sessionData.participantId,
     });
 
     setSocket(newSocket);

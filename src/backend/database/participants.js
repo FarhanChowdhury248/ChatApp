@@ -14,4 +14,25 @@ const createParticipant = async (username, role) => {
 
 const getAllParticipants = async () => await Participant.find().exec();
 
-module.exports = { createParticipant, getAllParticipants };
+const getSocketIds = async (memberIds) =>
+  memberIds.map(
+    async (id) =>
+      (
+        await Participant.find({
+          _id: mongoose.Schema.Types.ObjectId(id),
+        }).exec()
+      ).socketId
+  );
+
+const updateParticipantSocketId = async (participantId, socketId) =>
+  await Participant.updateOne(
+    { _id: mongoose.Types.ObjectId(participantId) },
+    { socketId }
+  ).exec();
+
+module.exports = {
+  createParticipant,
+  getAllParticipants,
+  getSocketIds,
+  updateParticipantSocketId,
+};
