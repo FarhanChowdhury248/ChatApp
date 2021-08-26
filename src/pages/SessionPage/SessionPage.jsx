@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
+import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
 
 export const SessionPage = ({ sessionData }) => {
@@ -48,7 +49,10 @@ export const SessionPage = ({ sessionData }) => {
         </BannerText>
         <BannerText>{"Room Code: " + sessionData.sessionCode}</BannerText>
       </Banner>
-      <CardsContainer>{getParticipantCards()}</CardsContainer>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <CardsContainer>{getParticipantCards()}</CardsContainer>
+        <ChatBox></ChatBox>
+      </div>
     </Container>
   );
 };
