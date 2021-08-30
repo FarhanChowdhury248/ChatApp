@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Tab, Container } from '@material-ui/core';
+import { Tabs, Tab, Container, TextField } from '@material-ui/core';
 import styled from "styled-components";
 
 export const ChatBox = () => {
@@ -14,18 +14,27 @@ export const ChatBox = () => {
     //     );
     // }
     
+    let val = "Chat 1"
+
     return (
         <ChatContainer>
-            <Container fixed maxWidth="md">
+            <Container fixed maxWidth="lg">
                 <TopLayer>
-                    <Tabs style={{ backgroundColor: "white"}}>
+                    <Tabs value={val} style={{ backgroundColor: "white", borderTopLeftRadius: "25px", 
+                        borderTopRightRadius: "25px", width: "100rem" }}>
                         <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" />
                         <Tab style={{ fontSize: "1.4rem" }} label="Chat 2" />
                     </Tabs>
                 </TopLayer>
                 <MainChatBox>
+                    <Container fixed style={{ backgroundColor: "#e2e2e2", height: "75rem", width: "100rem" }}>
+                        
+                    </Container>
                 </MainChatBox>
-                <BottomLayer></BottomLayer>
+                <BottomLayer>
+                    <TextField id="standard-basic" label="Standard" style={{ backgroundColor: "white", borderBottomLeftRadius: "25px", 
+                    borderBottomRightRadius: "25px", height: "6rem", width: "100rem" }} />
+                </BottomLayer>
             </Container>
         </ChatContainer>
     );
@@ -37,10 +46,8 @@ const ChatContainer = styled.div`
     flex-direction: column;
     float: right;
     height: 90%;
-    top:0;
-    left: 0;
-    bottom: 0;
-    right: 500;
+    margin-left: 70rem;
+    margin-top: 2.5rem;
 `;
 
 const TopLayer = styled.div`
