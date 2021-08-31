@@ -50,7 +50,7 @@ export const SessionPage = ({ sessionData }) => {
         <BannerText>{"Room Code: " + sessionData.sessionCode}</BannerText>
       </Banner>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <CardsContainer>{getParticipantCards()}</CardsContainer>
+        <CardsContainer style={{ width: "50%" }}>{getParticipantCards()}</CardsContainer>
         <ChatBox></ChatBox>
       </div>
     </Container>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Tab, Container, TextField } from '@material-ui/core';
+import { Tabs, Tab, Container, TextField, IconButton } from '@material-ui/core';
+import { MdSend } from "react-icons/md"
 import styled from "styled-components";
 
 export const ChatBox = () => {
@@ -20,20 +21,23 @@ export const ChatBox = () => {
         <ChatContainer>
             <Container fixed maxWidth="lg">
                 <TopLayer>
-                    <Tabs value={val} style={{ backgroundColor: "white", borderTopLeftRadius: "25px", 
-                        borderTopRightRadius: "25px", width: "100rem" }}>
+                    <Tabs centered value={val} style={{ backgroundColor: "white", borderTopLeftRadius: "25px", 
+                        borderTopRightRadius: "25px", width: "85rem" }}>
                         <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" />
                         <Tab style={{ fontSize: "1.4rem" }} label="Chat 2" />
                     </Tabs>
                 </TopLayer>
-                <MainChatBox>
-                    <Container fixed style={{ backgroundColor: "#e2e2e2", height: "75rem", width: "100rem" }}>
-                        
-                    </Container>
-                </MainChatBox>
+                <Container fixed style={{ marginRight: "25rem", backgroundColor: "#e2e2e2", height: "75rem", width: "85rem" }}>
+                    
+                </Container>
                 <BottomLayer>
-                    <TextField id="standard-basic" label="Standard" style={{ backgroundColor: "white", borderBottomLeftRadius: "25px", 
-                    borderBottomRightRadius: "25px", height: "6rem", width: "100rem" }} />
+                    <TextField InputProps={{
+            endAdornment: <IconButton>
+            <MdSend fontSize="large"></MdSend>
+        </IconButton>,
+          }} id="standard-basic" placeholder="Write a message..." size="large" fullWidth inputProps={{style: {fontSize: 16}}} style={{ paddingTop: "0.5rem", paddingLeft: "1rem", paddingRight: "6rem", backgroundColor: "white", borderBottomLeftRadius: "25px", 
+                    borderBottomRightRadius: "25px", height: "5rem" }} />
+                    
                 </BottomLayer>
             </Container>
         </ChatContainer>
@@ -46,7 +50,8 @@ const ChatContainer = styled.div`
     flex-direction: column;
     float: right;
     height: 90%;
-    margin-left: 70rem;
+    width: 50%;
+    margin-left: 50rem;
     margin-top: 2.5rem;
 `;
 
@@ -67,5 +72,5 @@ const MainChatBox = styled.div`
 const BottomLayer = styled.div`
     border-bottom-left-radius: 25%:
     border-bottom-right-radius: 25%:
-    color: white;
+    backgroundColor: white;
 `;
