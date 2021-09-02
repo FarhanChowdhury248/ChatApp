@@ -30,7 +30,7 @@ export const ChatBox = () => {
     function TypingMessage(props) {
         if (props.isTyping) {
             return (
-                <text>BRUH</text>
+                <text style={{fontSize: "11pt", fontStyle: "italic", marginBottom: "0.5rem", color: "rgba(0, 0, 0, 0.65)" }}>{window.sessionStorage.getItem("current_username")} is typing...</text>
             )
         }
 
@@ -47,7 +47,7 @@ export const ChatBox = () => {
                             <Tab style={{ fontSize: "1.4rem" }} label="Chat 2" value={2} />
                         </Tabs>
                 </TopLayer>
-                <Container fullWidth fixed style={{ marginRight: "25rem", backgroundColor: "#e2e2e2", height: "75rem" }}>
+                <Container fullWidth fixed style={{ display: "flex", flexDirection: "column-reverse", marginRight: "25rem", backgroundColor: "#e2e2e2", height: "75rem" }}>
                     <TypingMessage isTyping={message !== ""} />
                 </Container>
                 <BottomLayer>
