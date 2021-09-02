@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Tab, Container, TextField, IconButton } from '@material-ui/core';
+import { Tabs, Tab, Container, TextField, IconButton, InputAdornment } from '@material-ui/core';
 import { MdSend } from "react-icons/md"
 import styled from "styled-components";
 
 export const ChatBox = () => {
+
+    let [value, setValue] = React.useState(1);
+    let [message, setMessage] = React.useState("");
+
+    const handleTabChange = (event, newValue) => {
+        console.log(value);
+        setValue(newValue);
+    };
+
+    const handleMessageChange = (newValue) => {
+        setMessage(newValue.target.value)
+        console.log(message.toString());
+    };
 
     // const singleMessage = (content) => {
     //     return (
@@ -14,30 +27,36 @@ export const ChatBox = () => {
     //     </div>
     //     );
     // }
-    
-    let val = "Chat 1"
+    function TypingMessage(props) {
+        if (props.isTyping) {
+            return (
+                <text>BRUH</text>
+            )
+        }
+
+        else return <div></div>
+    }
 
     return (
         <ChatContainer>
             <Container fixed maxWidth="lg">
                 <TopLayer>
-                    <Tabs centered value={val} style={{ backgroundColor: "white", borderTopLeftRadius: "25px", 
-                        borderTopRightRadius: "25px", width: "85rem" }}>
-                        <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" />
-                        <Tab style={{ fontSize: "1.4rem" }} label="Chat 2" />
-                    </Tabs>
+                        <Tabs fullWidth centered indicatorColor="primary" value={value} onChange={handleTabChange} style={{ backgroundColor: "white", borderTopLeftRadius: "25px", 
+                            borderTopRightRadius: "25px" }}>
+                            <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" value={1} />
+                            <Tab style={{ fontSize: "1.4rem" }} label="Chat 2" value={2} />
+                        </Tabs>
                 </TopLayer>
-                <Container fixed style={{ marginRight: "25rem", backgroundColor: "#e2e2e2", height: "75rem", width: "85rem" }}>
-                    
+                <Container fullWidth fixed style={{ marginRight: "25rem", backgroundColor: "#e2e2e2", height: "75rem" }}>
+                    <TypingMessage isTyping={message !== ""} />
                 </Container>
                 <BottomLayer>
-                    <TextField InputProps={{
+                    <TextField value={message} onChange={handleMessageChange} id="standard-basic" placeholder="Write a message..." size="large" fullWidth inputProps={{style: {fontSize: 16}}} 
+          style={{ paddingTop: "0.5rem", paddingLeft: "1rem", paddingRight: "1rem",
+          backgroundColor: "white", borderBottomLeftRadius: "25px", borderBottomRightRadius: "25px", height: "5rem" }} InputProps={{
             endAdornment: <IconButton>
             <MdSend fontSize="large"></MdSend>
-        </IconButton>,
-          }} id="standard-basic" placeholder="Write a message..." size="large" fullWidth inputProps={{style: {fontSize: 16}}} style={{ paddingTop: "0.5rem", paddingLeft: "1rem", paddingRight: "6rem", backgroundColor: "white", borderBottomLeftRadius: "25px", 
-                    borderBottomRightRadius: "25px", height: "5rem" }} />
-                    
+        </IconButton>}} />
                 </BottomLayer>
             </Container>
         </ChatContainer>
@@ -59,6 +78,7 @@ const TopLayer = styled.div`
     height: 15%;
     border-top-left-radius: 25%:
     border-top-right-radius: 25%:
+    zIndex: 1000,
 `;  
 
 const MainChatBox = styled.div`
@@ -70,6 +90,8 @@ const MainChatBox = styled.div`
 `;
 
 const BottomLayer = styled.div`
+    display: flex;
+    flex-direction: row;
     border-bottom-left-radius: 25%:
     border-bottom-right-radius: 25%:
     backgroundColor: white;
