@@ -6,6 +6,7 @@ const participantSchema = new Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: { type: String, required: true },
   role: { type: String, enum: ["Host", "Guest"], required: true },
+  socketId: { type: String, required: false },
 });
 
 const Participant = mongoose.model("Participant", participantSchema);
