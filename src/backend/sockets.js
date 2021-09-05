@@ -47,6 +47,7 @@ const setupSockets = (server) => {
     });
 
     socket.on("createChat", async ({ members, sessionId, initialContent }) => {
+      console.log("IN SOCKETS JS - CLIENTS");
       const newChat = await createChat(members, sessionId, initialContent);
 
       const roomName = getChatName(newChat._id.toString());
@@ -54,7 +55,7 @@ const setupSockets = (server) => {
       const clients = io.sockets
         .clients(getRoomName(sessionId))
         .filter((client) => memberSocketIds.includes(client.id));
-
+      console.log(clients);
       clients.forEach((client) => {
         client.join(roomName);
         io.to(client.id).emit("createdChat", {

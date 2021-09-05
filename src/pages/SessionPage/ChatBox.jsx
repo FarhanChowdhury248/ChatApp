@@ -1,23 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Tabs, Tab, Container, TextField, IconButton, InputAdornment } from '@material-ui/core';
 import { MdSend } from "react-icons/md"
 import styled from "styled-components";
 
-export const ChatBox = () => {
+export const ChatBox = ({socket, chatId}) => {
 
-    let [value, setValue] = React.useState(1);
-    let [message, setMessage] = React.useState("");
+    const [value, setValue] = React.useState(1);
+    const [message, setMessage] = React.useState("");
+    // const [chatMessages, setChatMessages] = React.useState([]);
 
-    const handleTabChange = (event, newValue) => {
+    function handleTabChange(event, newValue) {
         console.log(value);
         setValue(newValue);
     };
 
-    const handleMessageChange = (newValue) => {
+    function handleMessageChange(newValue) {
         setMessage(newValue.target.value)
         console.log(message.toString());
     };
 
+    function sendMessage() {
+        //setChatMessages([...chatMessages, message])
+        console.log("chatId is " + chatId);
+        if (socket) {
+            socket.emit("updateChat", { updateType: "messageSent", id: chatId, updateData: {
+                content: ["hey"]//[...chatMessages, message]
+            } })
+        }
+    }
+    
     // const singleMessage = (content) => {
     //     return (
     //     <div>
@@ -54,7 +65,7 @@ export const ChatBox = () => {
                     <TextField value={message} onChange={handleMessageChange} id="standard-basic" placeholder="Write a message..." size="large" fullWidth inputProps={{style: {fontSize: 16}}} 
           style={{ paddingTop: "0.5rem", paddingLeft: "1rem", paddingRight: "1rem",
           backgroundColor: "white", borderBottomLeftRadius: "25px", borderBottomRightRadius: "25px", height: "5rem" }} InputProps={{
-            endAdornment: <IconButton>
+            endAdornment: <IconButton onClick={sendMessage()}>
             <MdSend fontSize="large"></MdSend>
         </IconButton>}} />
                 </BottomLayer>

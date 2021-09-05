@@ -14,7 +14,7 @@ const createChat = async (members, sessionId, initialContent) => {
   if (!sessions.some((session) => session._id.toString() === sessionId))
     throw new Error("Invalid session id. Session does not exist.");
 
-  if (Array.from(new Set(members)).length < 2)
+  if (Array.from(new Set(members)).length < 1)
     throw new Error("Invalid members. Must have at least 2 unique members.");
   const { participants } = await getAllParticipants();
   if (
@@ -31,8 +31,12 @@ const createChat = async (members, sessionId, initialContent) => {
 };
 
 const updateChat = async (chatId, updateType, updateData) => {
-  if (!chatId || !updateData || !updateType)
+  if (!chatId || !updateData || !updateType) {
+    if (!chatId) console.log("chatId missing");
+    if (!updateData) console.log("updateType missing");
+    if (!updateType) console.log("updateData missing");
     throw new Error("Bad request. Required parameters missing.");
+  }
 
   const { chats } = await getAllChats();
   if (!chats.some((chat) => chat._id.toString() === chatId))

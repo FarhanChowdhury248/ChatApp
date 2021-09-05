@@ -3,33 +3,53 @@ import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
+import { wait, waitFor } from "@testing-library/dom";
 
 export const SessionPage = ({ sessionData }) => {
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
+  const [chatId, setChatId] = useState("");
 
   useEffect(() => {
+    console.log("ue1");
     if (!sessionData) return;
 
     const newSocket = io.connect("http://localhost:5000", {
       transports: ["websocket"],
     });
 
+    // console.log(sessionData);
+
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
       participantId: sessionData.participantId,
     });
 
+    console.log("about to create chat....e");
+    newSocket.emit("createChat", {
+      members: [sessionData.participantId],
+      sessionId: sessionData.sessionId,
+    })
+
+    console.log("socket created chat....e");
+
     setSocket(newSocket);
+
+    console.log("hello");
 
     return () => newSocket.disconnect();
   }, [sessionData]);
 
   useEffect(() => {
-    socket &&
+    console.log("ue2");
+    if (!socket) return;
       socket.on("updateParticipants", ({ participants }) =>
         setParticipants(participants)
       );
+      socket.on("createdChat", ({ members, sessionId, id, content }) => {
+        console.log("received chatId " + id);
+        setChatId(id);
+      })
   }, [socket]);
 
   const getParticipantCards = () =>
@@ -39,7 +59,15 @@ export const SessionPage = ({ sessionData }) => {
       </CardContainer>
     ));
 
-  if (!sessionData) return null;
+  //if (!sessionData) return null;
+  // const createChatBox = () => {
+    
+  //     if (socket) {
+  //       return <ChatBox socket={socket} chatId={chatId}></ChatBox>
+  //     }
+
+  //     else return null;
+  // }
 
   return (
     <Container>
@@ -52,7 +80,7 @@ export const SessionPage = ({ sessionData }) => {
       </Banner>
       <div style={{ display: "flex", flexDirection: "row" }}>
         <CardsContainer style={{ width: "50%" }}>{getParticipantCards()}</CardsContainer>
-        <ChatBox></ChatBox>
+        {<ChatBox socket={socket} chatId={chatId}></ChatBox>}
       </div>
     </Container>
   );
