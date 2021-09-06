@@ -14,15 +14,17 @@ const createParticipant = async (username, role) => {
 
 const getAllParticipants = async () => await Participant.find().exec();
 
-const getSocketIds = async (memberIds) =>
-  memberIds.map(
-    async (id) =>
-      (
-        await Participant.find({
-          _id: mongoose.Schema.Types.ObjectId(id),
-        }).exec()
-      ).socketId
+const getSocketIds = async (memberIds) => {
+  // TODO: test for bugs with multiple memberIds
+  const res = await Promise.all(
+    memberIds.map((id) =>
+      Participant.find({
+        _id: mongoose.Types.ObjectId(id),
+      }).exec()
+    )
   );
+  return res[0].map((client) => client.socketId);
+};
 
 const updateParticipantSocketId = async (participantId, socketId) =>
   await Participant.updateOne(

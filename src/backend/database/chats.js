@@ -4,7 +4,6 @@ const Chat = require("../models/chat.model");
 const getAllChats = async () => await Chat.find().exec();
 
 const createChat = async (members, sessionId, messages) => {
-  console.log("creating chat...");
   const newChat = new Chat({
     _id: mongoose.Types.ObjectId(),
     members,

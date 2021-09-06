@@ -47,18 +47,12 @@ const setupSockets = (server) => {
     });
 
     socket.on("createChat", async ({ members, sessionId, initialContent }) => {
-      console.log("IN SOCKETS JS - CLIENTS");
       const newChat = await createChat(members, sessionId, initialContent);
-
       const roomName = getChatName(newChat._id.toString());
-      const memberSocketIds = await getSocketIds(members);
-      const clients = io.sockets
-        .clients(getRoomName(sessionId))
-        .filter((client) => memberSocketIds.includes(client.id));
-      console.log(clients);
+      const clients = await getSocketIds(members);
       clients.forEach((client) => {
-        client.join(roomName);
-        io.to(client.id).emit("createdChat", {
+        io.sockets.sockets.get(client).join(roomName);
+        io.to(client).emit("createdChat", {
           members,
           sessionId,
           id: newChat._id.toString(),
@@ -69,7 +63,6 @@ const setupSockets = (server) => {
 
     socket.on("updateChat", async ({ updateType, id, updateData }) => {
       await updateChat(id, updateType, updateData);
-
       const roomName = getChatName(id);
       io.in(roomName).emit("updatedChat", { updateType, updateData, id });
     });

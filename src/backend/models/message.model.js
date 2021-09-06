@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const MessageSchema = new Schema({
-  sender: mongoose.Schema.Types.ObjectId,
+  sender: String,
   message: String,
 });
 

@@ -9,7 +9,6 @@ const createChat = async (members, sessionId, initialContent) => {
     throw new Error("Bad request. Required parameters missing.");
 
   const messages = initialContent ? [initialContent] : [];
-
   const { sessions } = await getAllSessions();
   if (!sessions.some((session) => session._id.toString() === sessionId))
     throw new Error("Invalid session id. Session does not exist.");
@@ -26,15 +25,11 @@ const createChat = async (members, sessionId, initialContent) => {
     )
   )
     throw new Error("Invalid participant id. Participant does not exist.");
-
   return await chatsDatabase.createChat(members, sessionId, messages);
 };
 
 const updateChat = async (chatId, updateType, updateData) => {
   if (!chatId || !updateData || !updateType) {
-    if (!chatId) console.log("chatId missing");
-    if (!updateData) console.log("updateType missing");
-    if (!updateType) console.log("updateData missing");
     throw new Error("Bad request. Required parameters missing.");
   }
 
