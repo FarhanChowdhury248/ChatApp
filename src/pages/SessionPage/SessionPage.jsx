@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
+import { Tabs, Tab } from "@material-ui/core";
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
 
 export const SessionPage = ({ sessionData }) => {
+  const [value, setValue] = React.useState(1);
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
+  const [currentSelection, setCurrentSelection] = useState([]);
   const [chatId, setChatId] = useState("");
 
+  const handleTabChange = (event, newValue) => {
+    console.log(value);
+    setValue(newValue);
+  };
+
   useEffect(() => {
-    console.log("ue1");
     if (!sessionData) return;
 
     const newSocket = io.connect("http://localhost:5000", {
       transports: ["websocket"],
     });
-
+ 
     // console.log(sessionData);
 
     newSocket.emit("joinRoom", {
@@ -24,36 +31,43 @@ export const SessionPage = ({ sessionData }) => {
       participantId: sessionData.participantId,
     });
 
-    console.log("about to create chat....e");
     newSocket.emit("createChat", {
       members: [sessionData.participantId],
       sessionId: sessionData.sessionId,
     });
 
-    console.log("socket created chat....e");
-
     setSocket(newSocket);
-
-    console.log("hello");
 
     return () => newSocket.disconnect();
   }, [sessionData]);
 
   useEffect(() => {
-    console.log("ue2");
     if (!socket) return;
     socket.on("updateParticipants", ({ participants }) =>
       setParticipants(participants)
     );
     socket.on("createdChat", ({ members, sessionId, id, content }) => {
-      console.log("received chatId " + id);
       setChatId(id);
     });
   }, [socket]);
 
+  const cardSelected = (participantId) => {
+    if ((currentSelection.length != 0) && (currentSelection.includes(participantId))) currentSelection.splice(currentSelection.indexOf(participantId), 1);
+    else setCurrentSelection(currentSelection.push(participantId));
+    console.log(currentSelection);
+  }
+
+  const createTabs = (names) => {
+    if (currentSelection.length != 0) {
+      return <Tab style={{ fontSize: "1.4rem" }} label={currentSelection.toString()} value={99} />
+    }
+
+    else return <span></span>
+  }
+
   const getParticipantCards = () =>
     participants.map((participant, i) => (
-      <CardContainer key={i}>
+      <CardContainer onClick={() => cardSelected(participant._id)} key={i}>
         <ParticipantCard label={participant.name} />
       </CardContainer>
     ));
@@ -77,16 +91,35 @@ export const SessionPage = ({ sessionData }) => {
         </BannerText>
         <BannerText>{"Room Code: " + sessionData.sessionCode}</BannerText>
       </Banner>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <CardsContainer style={{ width: "50%" }}>
+      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+        <CardsContainer style={{ width: "50%", float: "left" }}>
           {getParticipantCards()}
         </CardsContainer>
         {
+          <div style={{display: "flex", flexDirection: "column", width: "40%", float: "right", marginTop: "1rem" }}>
+          <TopLayer>
+          <Tabs
+            fullWidth
+            centered
+            indicatorColor="primary"
+            value={value}
+            onChange={handleTabChange}
+            style={{
+              backgroundColor: "white",
+              borderTopLeftRadius: "25px",
+              borderTopRightRadius: "25px",
+            }}
+          >
+            <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" value={1} />
+            {createTabs()}
+          </Tabs>
+        </TopLayer>
           <ChatBox
             participantId={sessionData.participantId}
             socket={socket}
             chatId={chatId}
           ></ChatBox>
+          </div>
         }
       </div>
     </Container>
@@ -128,4 +161,11 @@ const CardsContainer = styled.div`
 
 const CardContainer = styled.div`
   margin: 1rem;
+`;
+
+const TopLayer = styled.div`
+  height: 15%;
+  float: right;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
 `;

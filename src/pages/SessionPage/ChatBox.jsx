@@ -31,7 +31,6 @@ export const ChatBox = ({ participantId, socket, chatId }) => {
       });
     }
     setMessage("");
-    console.log("after sending");
     console.log(chatMessages);
   };
 
@@ -76,25 +75,7 @@ export const ChatBox = ({ participantId, socket, chatId }) => {
   }
 
   return (
-    <ChatContainer>
-      <Container fixed maxWidth="lg">
-        <TopLayer>
-          <Tabs
-            fullWidth
-            centered
-            indicatorColor="primary"
-            value={value}
-            onChange={handleTabChange}
-            style={{
-              backgroundColor: "white",
-              borderTopLeftRadius: "25px",
-              borderTopRightRadius: "25px",
-            }}
-          >
-            <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" value={1} />
-            <Tab style={{ fontSize: "1.4rem" }} label="Chat 2" value={2} />
-          </Tabs>
-        </TopLayer>
+    <ChatContainer>   
         <Container
           fullWidth
           maxWidth="xl"
@@ -102,13 +83,13 @@ export const ChatBox = ({ participantId, socket, chatId }) => {
             display: "flex",
             flexDirection: "column-reverse",
             backgroundColor: "#e2e2e2",
-            height: "75rem",
+            height: "78rem",
           }}
         >
           <TypingMessage isTyping={message !== ""} />
           <div style={{display: "flex",
             flexDirection: "column",
-             width: "initial", maxHeight: "75rem", overflowY: "auto"}}><Messages></Messages></div>
+             width: "75rem", maxHeight: "75rem", overflowY: "auto"}}><Messages></Messages></div>
         </Container>
         <BottomLayer>
           <TextField
@@ -137,7 +118,6 @@ export const ChatBox = ({ participantId, socket, chatId }) => {
             }}
           />
         </BottomLayer>
-      </Container>
     </ChatContainer>
   );
 };
@@ -146,10 +126,8 @@ const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   float: right;
-  height: 90%;
-  width: 40%;
-  margin-left: auto;
-  margin-top: 2.5rem;
+  height: 95%;
+  width: 100%;
 `;
 
 const TopLayer = styled.div`

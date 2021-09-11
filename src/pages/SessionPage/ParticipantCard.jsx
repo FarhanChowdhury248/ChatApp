@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import UserImage from "../../assets/images/profilePic.png";
 import { BsFillPersonFill } from "react-icons/bs";
@@ -14,12 +14,18 @@ function CurrentUserCard(props) {
 }
 
 export const ParticipantCard = ({ label }) => {
+  const [isClicked, setIsClicked] = useState(false);
+
+  const clickCard = () => {
+    isClicked ? setIsClicked(false) : setIsClicked(true)
+  }
+
   return (
-    <Container>
+    <Container onClick={clickCard}>
       <ImageContainer>
         <img src={UserImage} alt="Profile" />
       </ImageContainer>
-      <LabelContainer>
+      <LabelContainer  style={isClicked ? {backgroundColor: "#46e02b"} : {backgroundColor: "white"}}>
         <CurrentUserCard username={label} />
         <Label>{label}</Label>
       </LabelContainer>
@@ -60,4 +66,6 @@ const Label = styled.p`
   font-size: 2rem;
   margin: 0;
   color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
