@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Tab } from "@material-ui/core";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
 
 export const SessionPage = ({ sessionData }) => {
-  const [value, setValue] = React.useState(1);
+  const [numChats, setNumchats] = React.useState(0);
+  const [mainChatId, setMainChatId] = React.useState("");
+  const [currentTab, setCurrentTab] = React.useState(0);
+  // const [tabsValues, setTabsValues] = React.useState(1);
+  const [tabs, setTabs] = React.useState([{key:"EVERYONE", component: <Tab style={{ fontSize: "1.4rem" }} label="EVERYONE" value={0} />}]);
+  const [chats, setChats] = React.useState([]); 
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [currentSelection, setCurrentSelection] = useState([]);
-  const [chatId, setChatId] = useState("");
+  
+  const [currentChatView, setCurrentChatView] = React.useState("");
 
-  const handleTabChange = (event, newValue) => {
-    console.log(value);
-    setValue(newValue);
+  const handleChange = (event, newValue) => {
+    console.log(currentTab);
+    setCurrentTab(newValue);
   };
 
   useEffect(() => {
@@ -47,14 +56,47 @@ export const SessionPage = ({ sessionData }) => {
       setParticipants(participants)
     );
     socket.on("createdChat", ({ members, sessionId, id, content }) => {
-      setChatId(id);
+      console.log("created it");
+      console.log(id);
+      // if (mainChatId === "") {  
+      //   setChats([{value: numChats, chatId: id}]);
+      //   setMainChatId(id);
+      //   setCurrentChatView(id);
+      // }
+
+      // else {
+        setNumchats(numChats+1);
+        setChats(chats.concat({value: numChats, chatId: id}));
+        setTabs(tabs.concat({key:id, component: <Tab style={{ fontSize: "1.4rem", color: "#8b898f" }} label={id} value={numChats} />}));
+        setCurrentTab(numChats);
+        setCurrentChatView(chats.at(numChats).chatId);
+      //}
     });
   }, [socket]);
 
-  const cardSelected = (participantId) => {
-    if ((currentSelection.length != 0) && (currentSelection.includes(participantId))) currentSelection.splice(currentSelection.indexOf(participantId), 1);
-    else setCurrentSelection(currentSelection.push(participantId));
-    console.log(currentSelection);
+  const newChat = () => {
+    if (currentSelection.length != 0) {
+      socket.emit("createChat", {
+        members: currentSelection,
+        sessionId: sessionData.sessionId,
+      });
+        
+    }
+  };
+
+  const cardSelected = (participantIds, participantNames) => {
+    if (currentSelection.includes(participantIds.at(0))) {
+      setCurrentSelection(currentSelection.filter(selection => selection != participantIds.at(0)));
+      console.log(currentSelection);
+      
+    }
+
+    else { 
+      setCurrentSelection(currentSelection.concat(participantIds.at(0)));
+      console.log(currentSelection);
+      console.log(currentSelection.length);
+    }
+    
   }
 
   const createTabs = (names) => {
@@ -67,10 +109,22 @@ export const SessionPage = ({ sessionData }) => {
 
   const getParticipantCards = () =>
     participants.map((participant, i) => (
-      <CardContainer onClick={() => cardSelected(participant._id)} key={i}>
+      <CardContainer onClick={() => cardSelected([participant._id], [participant.name])} key={i}>
         <ParticipantCard label={participant.name} />
       </CardContainer>
     ));
+
+  const createChatButton = () => {
+    if (currentSelection.length != 0) {
+      return <Fab style={{position: "sticky", height: "5rem", width: "10rem", bottom: "10rem", backgroundColor: "#EF5DF1"}} onClick={newChat}>
+      
+        Create Chat</Fab>
+    }
+
+    else {
+      return <div></div>
+    }
+  }
 
   //if (!sessionData) return null;
   // const createChatBox = () => {
@@ -95,6 +149,9 @@ export const SessionPage = ({ sessionData }) => {
         <CardsContainer style={{ width: "50%", float: "left" }}>
           {getParticipantCards()}
         </CardsContainer>
+        <div style={{display: "flex", flexDirection: "column-reverse", float: "left", position: "absolute", left: "35rem", bottom: "8rem"}}>
+          {createChatButton()}
+        </div>
         {
           <div style={{display: "flex", flexDirection: "column", width: "40%", float: "right", marginTop: "1rem" }}>
           <TopLayer>
@@ -102,22 +159,21 @@ export const SessionPage = ({ sessionData }) => {
             fullWidth
             centered
             indicatorColor="primary"
-            value={value}
-            onChange={handleTabChange}
+            value={currentTab}
+            onChange={handleChange} 
             style={{
               backgroundColor: "white",
               borderTopLeftRadius: "25px",
               borderTopRightRadius: "25px",
             }}
           >
-            <Tab style={{ fontSize: "1.4rem" }} label="Chat 1" value={1} />
-            {createTabs()}
+            {tabs.map((tab) => tab.component)}
           </Tabs>
         </TopLayer>
           <ChatBox
             participantId={sessionData.participantId}
             socket={socket}
-            chatId={chatId}
+            chatId={currentChatView}
           ></ChatBox>
           </div>
         }

@@ -25,7 +25,7 @@ export const ParticipantCard = ({ label }) => {
       <ImageContainer>
         <img src={UserImage} alt="Profile" />
       </ImageContainer>
-      <LabelContainer  style={isClicked ? {backgroundColor: "#46e02b"} : {backgroundColor: "white"}}>
+      <LabelContainer  style={isClicked ? {backgroundColor: "#EF5DF1"} : {backgroundColor: "white"}}>
         <CurrentUserCard username={label} />
         <Label>{label}</Label>
       </LabelContainer>
