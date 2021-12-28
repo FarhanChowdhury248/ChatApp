@@ -68,8 +68,8 @@ export const SessionPage = ({ sessionData }) => {
         setNumchats(numChats+1);
         setChats(chats.concat({value: numChats, chatId: id}));
         setTabs(tabs.concat({key:id, component: <Tab style={{ fontSize: "1.4rem", color: "#8b898f" }} label={id} value={numChats} />}));
-        setCurrentTab(numChats);
-        setCurrentChatView(chats.at(numChats).chatId);
+        // setCurrentTab(numChats);
+        //setCurrentChatView(chats.at(numChats).chatId);
       //}
     });
   }, [socket]);
@@ -161,6 +161,7 @@ export const SessionPage = ({ sessionData }) => {
             indicatorColor="primary"
             value={currentTab}
             onChange={handleChange} 
+            variant="scrollable"
             style={{
               backgroundColor: "white",
               borderTopLeftRadius: "25px",
