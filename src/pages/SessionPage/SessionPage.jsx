@@ -52,30 +52,53 @@ export const SessionPage = ({ sessionData }) => {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("updateParticipants", ({ participants }) =>
-      setParticipants(participants)
+    socket.on("updateParticipants", ({ participants }) => {
+        if (mainChatId === "") {  
+          setParticipants(participants)
+        }
+      }
     );
     socket.on("createdChat", ({ members, sessionId, id, content }) => {
       console.log("created it");
       console.log(id);
-      // if (mainChatId === "") {  
-      //   setChats([{value: numChats, chatId: id}]);
-      //   setMainChatId(id);
-      //   setCurrentChatView(id);
-      // }
+      if (mainChatId === "") {  
+        setChats([{value: numChats, chatId: id}]);
+        setMainChatId(id);
+        setCurrentChatView(id);
+      }
 
-      // else {
+      else {
+        console.log("current sel");
+        console.log(members);
+        let tabLabel = "";
+        for (let i = 0; i < members.length; i++) {
+          tabLabel = tabLabel + ", " + members[i];
+        }
+      
         setNumchats(numChats+1);
         setChats(chats.concat({value: numChats, chatId: id}));
-        setTabs(tabs.concat({key:id, component: <Tab style={{ fontSize: "1.4rem", color: "#8b898f" }} label={id} value={numChats} />}));
-        // setCurrentTab(numChats);
-        //setCurrentChatView(chats.at(numChats).chatId);
-      //}
-    });
+        console.log(numChats);
+        setTabs(tabs.concat({key:id, component: <Tab style={{ fontSize: "1.4rem", color: "#8b898f" }} label={tabLabel} value={numChats} />}));
+        setCurrentSelection([])
+        setCurrentTab(numChats)
+      //setCurrentChatView(chats.at(numChats).chatId);
+      }
+        });
   }, [socket]);
+
+  // useEffect(() => {
+    
+  //   socket.on("createdChat", ())
+
+  // }, [mainChatId]);
+
+  // const chatFunction = () => {
+
+  // }
 
   const newChat = () => {
     if (currentSelection.length != 0) {
+      console.log("curr sel > 0")
       socket.emit("createChat", {
         members: currentSelection,
         sessionId: sessionData.sessionId,
@@ -85,17 +108,19 @@ export const SessionPage = ({ sessionData }) => {
   };
 
   const cardSelected = (participantIds, participantNames) => {
-    if (currentSelection.includes(participantIds.at(0))) {
-      setCurrentSelection(currentSelection.filter(selection => selection != participantIds.at(0)));
-      console.log(currentSelection);
+    // if (currentSelection.includes(participantIds.at(0))) {
+    //   console.log("if");
+    //   setCurrentSelection(currentSelection.filter(selection => selection != participantIds.at(0)));
+    //   console.log(currentSelection);
       
-    }
+    // }
 
-    else { 
-      setCurrentSelection(currentSelection.concat(participantIds.at(0)));
-      console.log(currentSelection);
-      console.log(currentSelection.length);
-    }
+    // else { 
+      console.log("particpants");
+      console.log(participantIds);
+      console.log("else");
+      setCurrentSelection(currentSelection.concat(participantIds));
+    //}
     
   }
 
@@ -157,7 +182,6 @@ export const SessionPage = ({ sessionData }) => {
           <TopLayer>
           <Tabs
             fullWidth
-            centered
             indicatorColor="primary"
             value={currentTab}
             onChange={handleChange} 
