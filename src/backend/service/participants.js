@@ -23,6 +23,13 @@ const getSocketIds = async (memberIds) => {
   return socketIds;
 };
 
+const getParticipantNames = async (memberIds) => {
+  if (memberIds === null || memberIds === undefined)
+    throw new Error("Bad request. Required parameters missing.");
+  const socketIds = await participantsDatabase.getParticipantNames(memberIds);
+  return socketIds;
+};
+
 const updateParticipantSocketId = async (participantId, socketId) => {
   if (!participantId || !socketId)
     throw new Error("Bad request. Required parameters missing.");
@@ -34,4 +41,5 @@ module.exports = {
   getAllParticipants,
   getSocketIds,
   updateParticipantSocketId,
+  getParticipantNames,
 };

@@ -7,6 +7,7 @@ const { createChat, updateChat } = require("./service/chats");
 const {
   getSocketIds,
   updateParticipantSocketId,
+  getParticipantNames,
 } = require("./service/participants");
 
 const getRoomName = (code) => "Room: " + code;
@@ -47,13 +48,14 @@ const setupSockets = (server) => {
     });
 
     socket.on("createChat", async ({ members, sessionId, initialContent }) => {
+      const memberNames = await getParticipantNames(members);
       const newChat = await createChat(members, sessionId, initialContent);
       const roomName = getChatName(newChat._id.toString());
       const clients = await getSocketIds(members);
       clients.forEach((client) => {
         io.sockets.sockets.get(client).join(roomName);
         io.to(client).emit("createdChat", {
-          members,
+          members: memberNames,
           sessionId,
           id: newChat._id.toString(),
           content: newChat.messages,

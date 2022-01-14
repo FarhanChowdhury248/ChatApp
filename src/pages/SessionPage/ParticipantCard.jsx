@@ -1,31 +1,34 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import UserImage from "../../assets/images/profilePic.png";
 import { BsFillPersonFill } from "react-icons/bs";
 
 function CurrentUserCard(props) {
-  const currentUser = window.sessionStorage.getItem("current_username") === props.username;
+  const currentUser =
+    window.sessionStorage.getItem("current_username") === props.username;
   if (currentUser) {
-    return <IconContainer>
-      <BsFillPersonFill size={15}></BsFillPersonFill>
-    </IconContainer>
+    return (
+      <IconContainer>
+        <BsFillPersonFill size={15}></BsFillPersonFill>
+      </IconContainer>
+    );
   }
   return null;
 }
 
-export const ParticipantCard = ({ label }) => {
-  const [isClicked, setIsClicked] = useState(false);
-
-  const clickCard = () => {
-    isClicked ? setIsClicked(false) : setIsClicked(true)
-  }
-
+export const ParticipantCard = ({ label, isSelected = false }) => {
   return (
-    <Container onClick={clickCard}>
+    <Container>
       <ImageContainer>
         <img src={UserImage} alt="Profile" />
       </ImageContainer>
-      <LabelContainer  style={isClicked ? {backgroundColor: "#EF5DF1"} : {backgroundColor: "white"}}>
+      <LabelContainer
+        style={
+          isSelected
+            ? { backgroundColor: "#EF5DF1" }
+            : { backgroundColor: "white" }
+        }
+      >
         <CurrentUserCard username={label} />
         <Label>{label}</Label>
       </LabelContainer>

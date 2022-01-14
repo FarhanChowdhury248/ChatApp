@@ -1,154 +1,146 @@
 import React from "react";
-import { Tabs, Tab, Container, TextField, IconButton } from "@material-ui/core";
+import { Tabs, Tab, IconButton } from "@material-ui/core";
 import { MdSend } from "react-icons/md";
 import styled from "styled-components";
+import { TextField } from "@material-ui/core";
+import { useEffect } from "react";
 
-export const ChatBox = ({ participantId, socket, chatId }) => {
-  const [value, setValue] = React.useState(1);
+export const ChatBox = ({ chats }) => {
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event, newValue) => setValue(newValue);
+
   const [message, setMessage] = React.useState("");
-  const [chatMessages, setChatMessages] = React.useState([]);
+  const sendMessage = () => {};
 
-  const handleTabChange = (event, newValue) => {
-    console.log(value);
-    setValue(newValue);
-  };
+  useEffect(() => console.log(chats), [chats]);
 
-  const handleMessageChange = (newValue) => {
-    setMessage(newValue.target.value);
-    console.log(message.toString());
-  };
-
-  const sendMessage = () => {
-    setChatMessages([...chatMessages, { sender: window.sessionStorage.getItem("current_username"), message: message}])
-    console.log("chatId is " + chatId);
-    if (socket && chatId) {
-      socket.emit("updateChat", {
-        updateType: "messageSent",
-        id: chatId,
-        updateData: {
-          content: { sender: participantId, message: message },
-        },
-      });
-    }
-    setMessage("");
-    console.log(chatMessages);
-  };
-
-  function Messages() {
-    return chatMessages.map((chatMessage) => {
-      return <text
-      style={{
-        fontSize: "11pt",
-        marginBottom: "0.5rem",
-        color: "rgba(0, 0, 0, 0.65)",
-        overflowWrap: "break-word",
-      }}>
-      <b style={{overflowWrap: "break-word"}}>{chatMessage.sender}:</b> {chatMessage.message}
-    </text>
-    })
-  }
-
-  // const singleMessage = (content) => {
-  //     return (
-  //     <div>
-  //         <text>
-  //             {content}
-  //         </text>
-  //     </div>
-  //     );
-  // }
-  function TypingMessage(props) {
-    if (props.isTyping) {
-      return (
-        <text
+  if (chats.length === 0)
+    return (
+      <div
+        style={{
+          backgroundColor: "#e2e2e2",
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "3.3rem",
+        }}
+      >
+        <p
           style={{
-            fontSize: "11pt",
             fontStyle: "italic",
-            marginBottom: "0.5rem",
-            color: "rgba(0, 0, 0, 0.65)",
+            fontWeight: 300,
+            fontSize: "2.8rem",
+            color: "#626262",
           }}
         >
-          {window.sessionStorage.getItem("current_username")} is typing...
-        </text>
-      );
-    } else return <div></div>;
-  }
+          No Chats Created
+        </p>
+      </div>
+    );
 
   return (
-    <ChatContainer>   
-        <Container
-          fullWidth
-          maxWidth="xl"
-          style={{
-            display: "flex",
-            flexDirection: "column-reverse",
-            backgroundColor: "#e2e2e2",
-            height: "78rem",
-          }}
-        >
-          <TypingMessage isTyping={message !== ""} />
-          <div style={{display: "flex",
-            flexDirection: "column",
-             width: "75rem", maxHeight: "75rem", overflowY: "auto"}}><Messages></Messages></div>
-        </Container>
-        <BottomLayer>
+    <Container>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        centered
+        style={{
+          backgroundColor: "#FFF",
+          width: "100%",
+          borderRadius: "33px 33px 0px 0px",
+        }}
+      >
+        {chats.map((chat, i) => (
+          <Tab
+            key={i}
+            style={{ fontSize: "2rem", color: "#5B5B5B" }}
+            label={chat.members.join(", ")}
+          />
+        ))}
+      </Tabs>
+      <MessagesContainer>
+        {chats[value].content.map((msg) => (
+          <Message sender={msg.sender} text={msg.message} />
+        ))}
+      </MessagesContainer>
+      <MessageBox>
+        <div style={{ flexGrow: 1, paddingRight: "1.2rem" }}>
           <TextField
-            value={message}
-            onChange={handleMessageChange}
-            id="standard-basic"
-            placeholder="Write a message..."
-            size="large"
             fullWidth
-            inputProps={{ style: { fontSize: 16 } }}
-            style={{
-              paddingTop: "0.5rem",
-              paddingLeft: "1rem",
-              paddingRight: "1rem",
-              backgroundColor: "white",
-              borderBottomLeftRadius: "25px",
-              borderBottomRightRadius: "25px",
-              height: "5rem",
-            }}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={"Write a message"}
             InputProps={{
-              endAdornment: (
-                <IconButton onClick={sendMessage}>
-                  <MdSend fontSize="large"></MdSend>
-                </IconButton>
-              ),
+              style: {
+                fontSize: "2rem",
+                color: "#888888",
+              },
             }}
           />
-        </BottomLayer>
-    </ChatContainer>
+        </div>
+        <IconButton
+          onClick={() => {
+            sendMessage();
+            setMessage("");
+          }}
+        >
+          <MdSend color={message ? "#EC0DFC" : ""} fontSize="large" />
+        </IconButton>
+      </MessageBox>
+    </Container>
   );
 };
 
-const ChatContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  float: right;
-  height: 95%;
+const Container = styled.div`
+  height: 100%;
   width: 100%;
-`;
-
-const TopLayer = styled.div`
-  height: 15%;
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
-  z-index: 1000;
-`;
-
-const MainChatBox = styled.div`
   display: flex;
   flex-direction: column;
-  position: absolute;
-  right: 500;
-  background-color: grey;
 `;
 
-const BottomLayer = styled.div`
+const MessagesContainer = styled.div`
+  height: 100%;
+  background-color: #e2e2e2;
+  padding: 3rem;
+  padding-bottom: 1.5rem; // regular padding - bottom padding of MessageContainer
   display: flex;
-  flex-direction: row;
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
-  background-color: white;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-end;
+`;
+
+const MessageBox = styled.div`
+  background-color: #fff;
+  display: flex;
+  padding: 2.5rem;
+  border-radius: 0px 0px 33px 33px;
+`;
+
+const Message = ({ sender, text }) => (
+  <MessageContainer>
+    <SenderTypography>{sender}:</SenderTypography>
+    <TextTypography>{text}</TextTypography>
+  </MessageContainer>
+);
+
+const MessageContainer = styled.div`
+  margin: 0 0 1.5rem 0;
+  display: flex;
+`;
+
+const SenderTypography = styled.p`
+  margin: 0;
+  margin-right: 1rem;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #626262;
+`;
+
+const TextTypography = styled.p`
+  margin: 0;
+  margin-right: 1rem;
+  font-size: 2rem;
+  color: #626262;
 `;

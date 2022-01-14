@@ -15,7 +15,6 @@ const createParticipant = async (username, role) => {
 const getAllParticipants = async () => await Participant.find().exec();
 
 const getSocketIds = async (memberIds) => {
-  // TODO: test for bugs with multiple memberIds
   const res = await Promise.all(
     memberIds.map((id) =>
       Participant.find({
@@ -23,7 +22,18 @@ const getSocketIds = async (memberIds) => {
       }).exec()
     )
   );
-  return res[0].map((client) => client.socketId);
+  return res.map((client) => client[0].socketId);
+};
+
+const getParticipantNames = async (participantIds) => {
+  const res = await Promise.all(
+    participantIds.map((id) =>
+      Participant.find({
+        _id: mongoose.Types.ObjectId(id),
+      }).exec()
+    )
+  );
+  return res.map((client) => client[0].name);
 };
 
 const updateParticipantSocketId = async (participantId, socketId) =>
@@ -37,4 +47,5 @@ module.exports = {
   getAllParticipants,
   getSocketIds,
   updateParticipantSocketId,
+  getParticipantNames,
 };
