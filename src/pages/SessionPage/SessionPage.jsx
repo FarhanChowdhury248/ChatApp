@@ -35,10 +35,10 @@ export const SessionPage = ({ sessionData }) => {
       setParticipants(participants)
     );
     socket.on("createdChat", ({ members, sessionId, id, content }) => {
-      console.log(id);
-      setChats(chats.concat({ members, sessionId, id, content }));
+      console.log([...chats, { members, sessionId, id, content }]);
+      setChats([...chats, { members, sessionId, id, content }]);
     });
-  }, [socket]);
+  }, [socket, chats]);
 
   const createChat = () => {
     console.log("creating");

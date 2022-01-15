@@ -12,7 +12,7 @@ export const ChatBox = ({ chats }) => {
   const [message, setMessage] = React.useState("");
   const sendMessage = () => {};
 
-  useEffect(() => console.log(chats), [chats]);
+  // useEffect(() => console.log(chats), [chats]);
 
   if (chats.length === 0)
     return (
