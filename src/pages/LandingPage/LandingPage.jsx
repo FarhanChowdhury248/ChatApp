@@ -91,6 +91,7 @@ export const LandingPage = ({ setSessionData }) => {
               joinSession(joinSessionName, joinSessionCode).then((data) => {
                 if (!data) setShowModal(true);
                 else {
+                  window.sessionStorage.setItem("current_username", joinSessionName);
                   setSessionData(data);
                   history.push(PATHS.SESSION_PAGE);
                 }
