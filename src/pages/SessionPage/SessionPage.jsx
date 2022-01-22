@@ -3,13 +3,24 @@ import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@mui/material";
 
 export const SessionPage = ({ sessionData }) => {
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [currentSelection, setCurrentSelection] = useState([]);
   const [chats, setChats] = React.useState([]);
+
+  const loadChatBox = () => {
+    if (!socket) {
+      return (<CircularProgress color="secondary"></CircularProgress>);
+    }
+    else return (
+      <ChatBoxContainer>
+          <ChatBox chats={chats} socketProp={socket} sessionInfoProp={sessionData}/>
+      </ChatBoxContainer>
+    );
+  };
 
   useEffect(() => {
     if (!sessionData) return;
@@ -31,6 +42,7 @@ export const SessionPage = ({ sessionData }) => {
 
   useEffect(() => {
     if (!socket) return;
+    loadChatBox();
     socket.on("updateParticipants", ({ participants }) =>
       setParticipants(participants)
     );
@@ -105,9 +117,7 @@ export const SessionPage = ({ sessionData }) => {
             </Button>
           </div>
         </CardsContainer>
-        <ChatBoxContainer>
-          <ChatBox chats={chats} />
-        </ChatBoxContainer>
+        {loadChatBox()}
       </div>
     </Container>
   );

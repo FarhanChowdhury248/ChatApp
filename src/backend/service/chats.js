@@ -38,7 +38,7 @@ const updateChat = async (chatId, updateType, updateData) => {
     throw new Error("Invalid chat id. Chat does not exist.");
 
   if (updateType === "messageSent")
-    await chatsDatabase.addChatMessage(chatId, updateData.content);
+    await chatsDatabase.addChatMessage(chatId, updateData);
   else throw new Error("Invalid updateType. updateType not recognized.");
 };
 

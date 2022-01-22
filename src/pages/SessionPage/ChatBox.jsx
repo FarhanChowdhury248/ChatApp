@@ -1,18 +1,28 @@
 import React from "react";
-import { Tabs, Tab, IconButton } from "@material-ui/core";
+import { Tabs, Tab, IconButton } from "@mui/material";
 import { MdSend } from "react-icons/md";
 import styled from "styled-components";
 import { TextField } from "@material-ui/core";
 import { useEffect } from "react";
+import io from "socket.io-client";
 
-export const ChatBox = ({ chats }) => {
+export const ChatBox = ({ chats, socketProp, sessionInfoProp }) => {
   const [value, setValue] = React.useState(0);
+  const [sessionInfo, setSessionInfo] = React.useState(sessionInfoProp);
   const handleChange = (event, newValue) => setValue(newValue);
-
+  const [socket, setSocket] = React.useState(socketProp);
   const [message, setMessage] = React.useState("");
-  const sendMessage = () => {};
-
-  // useEffect(() => console.log(chats), [chats]);
+  
+  const sendMessage = (chatId) => {
+    socket.emit("updateChat", {
+      updateType: "messageSent",
+      id: chatId,
+      updateData: {
+        sender: sessionInfo.participantId, 
+        message: message
+      }
+    })
+  };
 
   if (chats.length === 0)
     return (
@@ -75,14 +85,14 @@ export const ChatBox = ({ chats }) => {
             InputProps={{
               style: {
                 fontSize: "2rem",
-                color: "#888888",
+                color: "black",
               },
             }}
           />
         </div>
         <IconButton
           onClick={() => {
-            sendMessage();
+            sendMessage(chats[value].id);
             setMessage("");
           }}
         >
