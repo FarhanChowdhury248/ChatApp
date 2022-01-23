@@ -1,41 +1,73 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
+import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
+import { Button, CircularProgress } from "@mui/material";
 
 export const SessionPage = ({ sessionData }) => {
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
+  const [currentSelection, setCurrentSelection] = useState([]);
+  const [chats, setChats] = React.useState([]);
+
+  const loadChatBox = () => {
+    if (!socket) {
+      return (<CircularProgress color="secondary"></CircularProgress>);
+    }
+    else return (
+      <ChatBoxContainer>
+          <ChatBox chats={chats} socketProp={socket} sessionInfoProp={sessionData}/>
+      </ChatBoxContainer>
+    );
+  };
 
   useEffect(() => {
     if (!sessionData) return;
-
     const newSocket = io.connect("http://localhost:5000", {
       transports: ["websocket"],
     });
-
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
+      participantId: sessionData.participantId,
     });
-
+    // TODO: implement creation and update of main chat
+    // newSocket.emit("createChat", {
+    //   members: [sessionData.participantId],
+    //   sessionId: sessionData.sessionId,
+    // });
     setSocket(newSocket);
-
     return () => newSocket.disconnect();
   }, [sessionData]);
 
   useEffect(() => {
-    socket &&
-      socket.on("updateParticipants", ({ participants }) =>
-        setParticipants(participants)
-      );
-  }, [socket]);
+    if (!socket) return;
+    loadChatBox();
+    socket.on("updateParticipants", ({ participants }) =>
+      setParticipants(participants)
+    );
+    socket.on("createdChat", ({ members, sessionId, id, content }) => {
+      console.log([...chats, { members, sessionId, id, content }]);
+      setChats([...chats, { members, sessionId, id, content }]);
+    });
+  }, [socket, chats]);
 
-  const getParticipantCards = () =>
-    participants.map((participant, i) => (
-      <CardContainer key={i}>
-        <ParticipantCard label={participant.name} />
-      </CardContainer>
-    ));
+  const createChat = () => {
+    console.log("creating");
+    socket.emit("createChat", {
+      members: currentSelection,
+      sessionId: sessionData.sessionId,
+    });
+    setCurrentSelection([]);
+  };
+
+  const selectCard = (participantId) => {
+    if (currentSelection.includes(participantId))
+      setCurrentSelection(
+        currentSelection.filter((pid) => pid !== participantId)
+      );
+    else setCurrentSelection(currentSelection.concat(participantId));
+  };
 
   if (!sessionData) return null;
 
@@ -48,7 +80,45 @@ export const SessionPage = ({ sessionData }) => {
         </BannerText>
         <BannerText>{"Room Code: " + sessionData.sessionCode}</BannerText>
       </Banner>
-      <CardsContainer>{getParticipantCards()}</CardsContainer>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          flexGrow: 1,
+          justifyContent: "space-between",
+        }}
+      >
+        <CardsContainer>
+          <div style={{ display: "flex", flexGrow: 1 }}>
+            {participants.map((participant, i) => (
+              <CardContainer
+                onClick={() => selectCard(participant._id)}
+                key={i}
+              >
+                <ParticipantCard
+                  label={participant.name}
+                  isSelected={currentSelection.includes(participant._id)}
+                />
+              </CardContainer>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              disabled={currentSelection.length < 2}
+              onClick={createChat}
+              style={{
+                backgroundColor:
+                  currentSelection.length < 2 ? "#A1A1A1" : "#EF5DF1",
+                fontSize: "2rem",
+                width: "100%",
+              }}
+            >
+              Create Chat
+            </Button>
+          </div>
+        </CardsContainer>
+        {loadChatBox()}
+      </div>
     </Container>
   );
 };
@@ -61,6 +131,8 @@ const Container = styled.div`
   right: 0;
   background-image: linear-gradient(90deg, #09d3df 0%, #ec0dfc 100%);
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Banner = styled.div`
@@ -81,11 +153,25 @@ const BannerText = styled.p`
 
 const CardsContainer = styled.div`
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
-  height: calc(100% - 5rem);
-  overflow-y: scroll;
+  float: left;
+  width: 50%;
+  padding-right: 1rem;
 `;
 
 const CardContainer = styled.div`
   margin: 1rem;
+  height: fit-content;
+`;
+
+const ChatBoxContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 50%;
+  flex-direction: column;
+  flex-direction: column;
+  align-content: center;
+  padding-left: 1rem;
 `;

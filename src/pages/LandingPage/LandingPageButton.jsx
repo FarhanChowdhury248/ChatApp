@@ -1,5 +1,5 @@
 import React from "react";
-import { Button as MuiButton } from "@material-ui/core";
+import { Button as MuiButton } from "@mui/material";
 
 export const LandingPageButton = ({ text = "", ...props }) => (
   <MuiButton
