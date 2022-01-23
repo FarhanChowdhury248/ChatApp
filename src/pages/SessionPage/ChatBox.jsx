@@ -1,0 +1,156 @@
+import React from "react";
+import { Tabs, Tab, IconButton } from "@mui/material";
+import { MdSend } from "react-icons/md";
+import styled from "styled-components";
+import { TextField } from "@material-ui/core";
+import { useEffect } from "react";
+import io from "socket.io-client";
+
+export const ChatBox = ({ chats, socketProp, sessionInfoProp }) => {
+  const [value, setValue] = React.useState(0);
+  const [sessionInfo, setSessionInfo] = React.useState(sessionInfoProp);
+  const handleChange = (event, newValue) => setValue(newValue);
+  const [socket, setSocket] = React.useState(socketProp);
+  const [message, setMessage] = React.useState("");
+  
+  const sendMessage = (chatId) => {
+    socket.emit("updateChat", {
+      updateType: "messageSent",
+      id: chatId,
+      updateData: {
+        sender: sessionInfo.participantId, 
+        message: message
+      }
+    })
+  };
+
+  if (chats.length === 0)
+    return (
+      <div
+        style={{
+          backgroundColor: "#e2e2e2",
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "3.3rem",
+        }}
+      >
+        <p
+          style={{
+            fontStyle: "italic",
+            fontWeight: 300,
+            fontSize: "2.8rem",
+            color: "#626262",
+          }}
+        >
+          No Chats Created
+        </p>
+      </div>
+    );
+
+  return (
+    <Container>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        centered
+        style={{
+          backgroundColor: "#FFF",
+          width: "100%",
+          borderRadius: "33px 33px 0px 0px",
+        }}
+      >
+        {chats.map((chat, i) => (
+          <Tab
+            key={i}
+            style={{ fontSize: "2rem", color: "#5B5B5B" }}
+            label={chat.members.join(", ")}
+          />
+        ))}
+      </Tabs>
+      <MessagesContainer>
+        {chats[value].content.map((msg) => (
+          <Message sender={msg.sender} text={msg.message} />
+        ))}
+      </MessagesContainer>
+      <MessageBox>
+        <div style={{ flexGrow: 1, paddingRight: "1.2rem" }}>
+          <TextField
+            fullWidth
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={"Write a message"}
+            InputProps={{
+              style: {
+                fontSize: "2rem",
+                color: "black",
+              },
+            }}
+          />
+        </div>
+        <IconButton
+          onClick={() => {
+            sendMessage(chats[value].id);
+            setMessage("");
+          }}
+        >
+          <MdSend color={message ? "#EC0DFC" : ""} fontSize="large" />
+        </IconButton>
+      </MessageBox>
+    </Container>
+  );
+};
+
+const Container = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MessagesContainer = styled.div`
+  height: 100%;
+  background-color: #e2e2e2;
+  padding: 3rem;
+  padding-bottom: 1.5rem; // regular padding - bottom padding of MessageContainer
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: flex-end;
+`;
+
+const MessageBox = styled.div`
+  background-color: #fff;
+  display: flex;
+  padding: 2.5rem;
+  border-radius: 0px 0px 33px 33px;
+`;
+
+const Message = ({ sender, text }) => (
+  <MessageContainer>
+    <SenderTypography>{sender}:</SenderTypography>
+    <TextTypography>{text}</TextTypography>
+  </MessageContainer>
+);
+
+const MessageContainer = styled.div`
+  margin: 0 0 1.5rem 0;
+  display: flex;
+`;
+
+const SenderTypography = styled.p`
+  margin: 0;
+  margin-right: 1rem;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #626262;
+`;
+
+const TextTypography = styled.p`
+  margin: 0;
+  margin-right: 1rem;
+  font-size: 2rem;
+  color: #626262;
+`;
