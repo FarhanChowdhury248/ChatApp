@@ -12,12 +12,12 @@ export const SessionPage = ({ sessionData }) => {
   const [chats, setChats] = React.useState([]);
 
   const loadChatBox = () => {
-    if (!socket) {
+    if (!socket || !chats) {
       return (<CircularProgress color="secondary"></CircularProgress>);
     }
     else return (
       <ChatBoxContainer>
-          <ChatBox chats={chats} socketProp={socket} sessionInfoProp={sessionData}/>
+          <ChatBox chats={chats} setChats={setChats} socket={socket} sessionInfo={sessionData}/>
       </ChatBoxContainer>
     );
   };
@@ -31,18 +31,12 @@ export const SessionPage = ({ sessionData }) => {
       sessionId: sessionData.sessionId,
       participantId: sessionData.participantId,
     });
-    // TODO: implement creation and update of main chat
-    // newSocket.emit("createChat", {
-    //   members: [sessionData.participantId],
-    //   sessionId: sessionData.sessionId,
-    // });
     setSocket(newSocket);
     return () => newSocket.disconnect();
   }, [sessionData]);
 
   useEffect(() => {
     if (!socket) return;
-    loadChatBox();
     socket.on("updateParticipants", ({ participants }) =>
       setParticipants(participants)
     );
