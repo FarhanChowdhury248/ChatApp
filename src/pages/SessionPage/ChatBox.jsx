@@ -31,7 +31,8 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
       updateType: "messageSent",
       id: chatId,
       updateData: {
-        sender: sessionInfo.participantId, 
+        senderName: sessionStorage.getItem("current_username"),
+        senderId: sessionInfo.participantId, 
         message: message
       }
     })
@@ -85,7 +86,7 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
       </Tabs>
       <MessagesContainer>
         {chats[value].content.map((msg, i) => (
-          <Message key={i} sender={msg.sender} text={msg.message} />
+          <Message key={i} sender={msg.senderName} text={msg.message} />
         ))}
       </MessagesContainer>
       <MessageBox>
