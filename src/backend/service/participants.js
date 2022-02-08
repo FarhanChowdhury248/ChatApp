@@ -4,6 +4,9 @@ const getAllParticipants = async () => ({
   participants: await participantsDatabase.getAllParticipants(),
 });
 
+const getParticipantBySocketId = async (socketId) =>
+  await participantsDatabase.getParticipantBySocketId(socketId);
+
 const createParticipant = async (username, role = "Guest") => {
   if (!username || username.length === 0)
     throw new Error("Invalid username. Username must be non-empty string.");
@@ -30,16 +33,24 @@ const getParticipantNames = async (memberIds) => {
   return socketIds;
 };
 
-const updateParticipantSocketId = async (participantId, socketId) => {
-  if (!participantId || !socketId)
+const updateParticipantSocketId = async (participantId, socketId = null) => {
+  if (!participantId)
     throw new Error("Bad request. Required parameters missing.");
   await participantsDatabase.updateParticipantSocketId(participantId, socketId);
+};
+
+const deleteParticipant = async (participantId) => {
+  if (!participantId)
+    throw new Error("Bad request. Required parameters missing.");
+  await participantsDatabase.deleteParticipant(participantId);
 };
 
 module.exports = {
   createParticipant,
   getAllParticipants,
+  getParticipantBySocketId,
   getSocketIds,
   updateParticipantSocketId,
   getParticipantNames,
+  deleteParticipant,
 };

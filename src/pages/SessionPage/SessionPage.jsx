@@ -5,7 +5,10 @@ import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
 import { Button, CircularProgress } from "@mui/material";
 
-export const SessionPage = ({ sessionData }) => {
+export const SessionPage = () => {
+  const [sessionData] = useState(
+    JSON.parse(window.sessionStorage.getItem("sessionData"))
+  );
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [currentSelection, setCurrentSelection] = useState([]);
@@ -13,14 +16,23 @@ export const SessionPage = ({ sessionData }) => {
 
   const loadChatBox = () => {
     if (!socket) {
-      return (<CircularProgress color="secondary"></CircularProgress>);
-    }
-    else return (
-      <ChatBoxContainer>
-          <ChatBox chats={chats} socketProp={socket} sessionInfoProp={sessionData}/>
-      </ChatBoxContainer>
-    );
+      return <CircularProgress color="secondary"></CircularProgress>;
+    } else
+      return (
+        <ChatBoxContainer>
+          <ChatBox
+            chats={chats}
+            socketProp={socket}
+            sessionInfoProp={sessionData}
+          />
+        </ChatBoxContainer>
+      );
   };
+
+  useEffect(() => {
+    window.onpopstate = () =>
+      window.sessionStorage.setItem("sessionData", null);
+  }, []);
 
   useEffect(() => {
     if (!sessionData) return;
@@ -30,6 +42,7 @@ export const SessionPage = ({ sessionData }) => {
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
       participantId: sessionData.participantId,
+      sessionCode: sessionData.sessionCode,
     });
     // TODO: implement creation and update of main chat
     // newSocket.emit("createChat", {
@@ -42,7 +55,6 @@ export const SessionPage = ({ sessionData }) => {
 
   useEffect(() => {
     if (!socket) return;
-    loadChatBox();
     socket.on("updateParticipants", ({ participants }) =>
       setParticipants(participants)
     );

@@ -37,8 +37,14 @@ export const LandingPage = ({ setSessionData }) => {
           <LandingPageButton
             onClick={() =>
               createSession(createSessionName).then((data) => {
-                window.sessionStorage.setItem("current_username", createSessionName);
-                setSessionData(data);
+                window.sessionStorage.setItem(
+                  "current_username",
+                  createSessionName
+                );
+                window.sessionStorage.setItem(
+                  "sessionData",
+                  JSON.stringify(data)
+                );
                 history.push(PATHS.SESSION_PAGE);
               })
             }
@@ -91,8 +97,14 @@ export const LandingPage = ({ setSessionData }) => {
               joinSession(joinSessionName, joinSessionCode).then((data) => {
                 if (!data) setShowModal(true);
                 else {
-                  window.sessionStorage.setItem("current_username", joinSessionName);
-                  setSessionData(data);
+                  window.sessionStorage.setItem(
+                    "current_username",
+                    joinSessionName
+                  );
+                  window.sessionStorage.setItem(
+                    "sessionData",
+                    JSON.stringify(data)
+                  );
                   history.push(PATHS.SESSION_PAGE);
                 }
               });
