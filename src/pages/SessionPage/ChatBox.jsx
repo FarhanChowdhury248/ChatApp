@@ -11,19 +11,20 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
   const [message, setMessage] = React.useState("");
 
   useEffect(() => {
-    if ((!socket) || (!chats)) return;
+    if (!socket || !chats) return;
     console.log("HERE");
-    socket.on("updatedChat", ({ updateType, updateData, id}) => {
+    socket.on("updatedChat", ({ updateType, updateData, id }) => {
       console.log("updated chats");
-      setChats(chats.map(chat => {
-        const newChat = {...chat};
+      const newChats = chats.map((chat) => {
+        const newChat = { ...chat };
         if (chat.id === id) {
           newChat.content = chat.content.concat(updateData);
         }
         return newChat;
-      }));
-      console.log(chats);
-  });
+      });
+      setChats(newChats);
+      console.log(newChats);
+    });
   }, [socket, chats]);
 
   const sendMessage = (chatId) => {
@@ -32,13 +33,13 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
       id: chatId,
       updateData: {
         senderName: sessionStorage.getItem("current_username"),
-        senderId: sessionInfo.participantId, 
-        message: message
-      }
-    })
+        senderId: sessionInfo.participantId,
+        message: message,
+      },
+    });
   };
 
-  if (chats.length === 0)
+  if (!chats || chats.length === 0 || !chats[value])
     return (
       <div
         style={{
