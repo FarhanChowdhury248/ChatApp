@@ -14,6 +14,9 @@ const createParticipant = async (username, role) => {
 
 const getAllParticipants = async () => await Participant.find().exec();
 
+const getParticipantBySocketId = async (socketId) =>
+  await Participant.findOne({ socketId }).exec();
+
 const getSocketIds = async (memberIds) => {
   const res = await Promise.all(
     memberIds.map((id) =>
@@ -42,10 +45,15 @@ const updateParticipantSocketId = async (participantId, socketId) =>
     { socketId }
   ).exec();
 
+const deleteParticipant = async (participantId) =>
+  await Participant.deleteOne({ _id: mongoose.Types.ObjectId(participantId) });
+
 module.exports = {
   createParticipant,
   getAllParticipants,
+  getParticipantBySocketId,
   getSocketIds,
   updateParticipantSocketId,
   getParticipantNames,
+  deleteParticipant,
 };
