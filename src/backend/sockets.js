@@ -8,7 +8,14 @@ const {
   getSocketIds,
   updateParticipantSocketId,
   getParticipantNames,
+  getParticipantBySocketId,
+  deleteParticipant,
 } = require("./service/participants");
+const {
+  getSessionByParticipantId,
+  appendSessionParticipant,
+  removeSessionParticipant,
+} = require("./service/sessions");
 
 const getRoomName = (code) => "Room: " + code;
 
@@ -30,21 +37,40 @@ const setupSockets = (server) => {
   io.on("connection", (socket) => {
     console.log("made connection: " + socket.id);
 
-    socket.on("joinRoom", async ({ sessionId, participantId }) => {
-      await updateParticipantSocketId(participantId, socket.id);
+    socket.on("joinRoom", async ({ sessionId, participantId, sessionCode }) => {
+      try {
+        await updateParticipantSocketId(participantId, socket.id);
+        await appendSessionParticipant(sessionCode, participantId);
 
-      const roomName = getRoomName(sessionId);
-      socket.join(roomName);
+        const roomName = getRoomName(sessionId);
+        socket.join(roomName);
 
-      const participants = await getRoomParticipants(sessionId);
+        const participants = await getRoomParticipants(sessionId);
 
-      io.to(roomName).emit("updateParticipants", {
-        participants,
-      });
+        io.to(roomName).emit("updateParticipants", {
+          participants,
+        });
+      } catch (e) {
+        console.error(e);
+      }
     });
 
-    socket.on("disconnect", () => {
-      console.log("disconnected: " + socket.id);
+    socket.on("disconnect", async () => {
+      try {
+        console.log("disconnected: " + socket.id);
+        const participant = await getParticipantBySocketId(socket.id);
+        if (!participant) return;
+        const participantSession = await getSessionByParticipantId(
+          participant.id.toString()
+        );
+        await removeSessionParticipant(
+          participantSession.id.toString(),
+          participant.id.toString()
+        );
+        await deleteParticipant(participant.id.toString());
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     socket.on("createChat", async ({ members, sessionId, initialContent }) => {

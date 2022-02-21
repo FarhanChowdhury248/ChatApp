@@ -5,7 +5,10 @@ import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
 import { Button, CircularProgress } from "@mui/material";
 
-export const SessionPage = ({ sessionData }) => {
+export const SessionPage = () => {
+  const [sessionData] = useState(
+    JSON.parse(window.sessionStorage.getItem("sessionData"))
+  );
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [currentSelection, setCurrentSelection] = useState([]);
@@ -23,6 +26,11 @@ export const SessionPage = ({ sessionData }) => {
   };
 
   useEffect(() => {
+    window.onpopstate = () =>
+      window.sessionStorage.setItem("sessionData", null);
+  }, []);
+
+  useEffect(() => {
     if (!sessionData) return;
     const newSocket = io.connect("http://localhost:5000", {
       transports: ["websocket"],
@@ -30,6 +38,7 @@ export const SessionPage = ({ sessionData }) => {
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
       participantId: sessionData.participantId,
+      sessionCode: sessionData.sessionCode,
     });
     setSocket(newSocket);
     return () => newSocket.disconnect();
