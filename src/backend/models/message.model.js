@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const MessageSchema = new Schema({
-  sender: String,
+  senderName: String,
+  senderId: String,
   message: String,
 });
 

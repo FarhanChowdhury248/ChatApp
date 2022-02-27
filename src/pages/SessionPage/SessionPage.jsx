@@ -15,18 +15,14 @@ export const SessionPage = () => {
   const [chats, setChats] = React.useState([]);
 
   const loadChatBox = () => {
-    if (!socket) {
-      return <CircularProgress color="secondary"></CircularProgress>;
-    } else
-      return (
-        <ChatBoxContainer>
-          <ChatBox
-            chats={chats}
-            socketProp={socket}
-            sessionInfoProp={sessionData}
-          />
-        </ChatBoxContainer>
-      );
+    if (!socket || !chats) {
+      return (<CircularProgress color="secondary"></CircularProgress>);
+    }
+    else return (
+      <ChatBoxContainer>
+          <ChatBox chats={chats} setChats={setChats} socket={socket} sessionInfo={sessionData}/>
+      </ChatBoxContainer>
+    );
   };
 
   useEffect(() => {
@@ -44,11 +40,6 @@ export const SessionPage = () => {
       participantId: sessionData.participantId,
       sessionCode: sessionData.sessionCode,
     });
-    // TODO: implement creation and update of main chat
-    // newSocket.emit("createChat", {
-    //   members: [sessionData.participantId],
-    //   sessionId: sessionData.sessionId,
-    // });
     setSocket(newSocket);
     return () => newSocket.disconnect();
   }, [sessionData]);

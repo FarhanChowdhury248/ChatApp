@@ -3,28 +3,43 @@ import { Tabs, Tab, IconButton } from "@mui/material";
 import { MdSend } from "react-icons/md";
 import styled from "styled-components";
 import { TextField } from "@material-ui/core";
-import { useEffect } from "react";
-import io from "socket.io-client";
+import { useEffect, useState, useRef } from "react";
 
-export const ChatBox = ({ chats, socketProp, sessionInfoProp }) => {
+export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
   const [value, setValue] = React.useState(0);
-  const [sessionInfo, setSessionInfo] = React.useState(sessionInfoProp);
   const handleChange = (event, newValue) => setValue(newValue);
-  const [socket, setSocket] = React.useState(socketProp);
   const [message, setMessage] = React.useState("");
-  
+
+  useEffect(() => {
+    if (!socket || !chats) return;
+    console.log("HERE");
+    socket.on("updatedChat", ({ updateType, updateData, id }) => {
+      console.log("updated chats");
+      const newChats = chats.map((chat) => {
+        const newChat = { ...chat };
+        if (chat.id === id) {
+          newChat.content = chat.content.concat(updateData);
+        }
+        return newChat;
+      });
+      setChats(newChats);
+      console.log(newChats);
+    });
+  }, [socket, chats]);
+
   const sendMessage = (chatId) => {
     socket.emit("updateChat", {
       updateType: "messageSent",
       id: chatId,
       updateData: {
-        sender: sessionInfo.participantId, 
-        message: message
-      }
-    })
+        senderName: sessionStorage.getItem("current_username"),
+        senderId: sessionInfo.participantId,
+        message: message,
+      },
+    });
   };
 
-  if (chats.length === 0)
+  if (!chats || chats.length === 0 || !chats[value])
     return (
       <div
         style={{
@@ -71,8 +86,8 @@ export const ChatBox = ({ chats, socketProp, sessionInfoProp }) => {
         ))}
       </Tabs>
       <MessagesContainer>
-        {chats[value].content.map((msg) => (
-          <Message sender={msg.sender} text={msg.message} />
+        {chats[value].content.map((msg, i) => (
+          <Message key={i} sender={msg.senderName} text={msg.message} />
         ))}
       </MessagesContainer>
       <MessageBox>
@@ -116,9 +131,10 @@ const MessagesContainer = styled.div`
   padding: 3rem;
   padding-bottom: 1.5rem; // regular padding - bottom padding of MessageContainer
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
-  justify-content: flex-start;
-  align-items: flex-end;
+  justify-content: flex-end;
+  align-items: flex-start;
 `;
 
 const MessageBox = styled.div`
