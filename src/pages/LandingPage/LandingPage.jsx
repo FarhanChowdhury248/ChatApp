@@ -19,11 +19,11 @@ export const LandingPage = ({ setSessionData }) => {
 
   return (
     <Background>
-      <Container>
+      <Container tabIndex={"0"}>
         <Pane>
           <HeaderText>Create a new session.</HeaderText>
           <div style={{ margin: "5rem 0", marginBottom: "10rem" }}>
-            <Textfield
+            <Textfield 
               text={createSessionName}
               setText={setCreateSessionName}
               placeholder="Enter your nickname"
