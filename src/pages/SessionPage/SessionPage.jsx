@@ -11,7 +11,7 @@ export const SessionPage = () => {
   );
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
-  const [currentSelection, setCurrentSelection] = useState([]);
+  const [currentSelection, setCurrentSelection] = useState([sessionData.participantId]);
   const [chats, setChats] = React.useState([]);
 
   const loadChatBox = () => {
@@ -61,15 +61,16 @@ export const SessionPage = () => {
       members: currentSelection,
       sessionId: sessionData.sessionId,
     });
-    setCurrentSelection([]);
+    setCurrentSelection([sessionData.participantId]);
   };
 
   const selectCard = (participantId) => {
-    if (currentSelection.includes(participantId))
+    if (currentSelection.includes(participantId) && participantId !== sessionData.participantId)
       setCurrentSelection(
         currentSelection.filter((pid) => pid !== participantId)
       );
-    else setCurrentSelection(currentSelection.concat(participantId));
+    else if (participantId !== sessionData.participantId) 
+      setCurrentSelection(currentSelection.concat(participantId));
   };
 
   if (!sessionData) return null;
@@ -100,7 +101,7 @@ export const SessionPage = () => {
               >
                 <ParticipantCard
                   label={participant.name}
-                  isSelected={currentSelection.includes(participant._id)}
+                  isSelected={currentSelection.includes(participant._id) || participant.name === window.sessionStorage.getItem("current_username")}
                 />
               </CardContainer>
             ))}
