@@ -101,7 +101,7 @@ export const SessionPage = () => {
               >
                 <ParticipantCard
                   label={participant.name}
-                  isSelected={currentSelection.includes(participant._id) || participant.name === window.sessionStorage.getItem("current_username")}
+                  isSelected={currentSelection.includes(participant._id)}
                 />
               </CardContainer>
             ))}
