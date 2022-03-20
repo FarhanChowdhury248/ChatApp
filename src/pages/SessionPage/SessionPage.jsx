@@ -11,18 +11,30 @@ export const SessionPage = () => {
   );
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
-  const [currentSelection, setCurrentSelection] = useState([sessionData.participantId]);
+  const [currentSelection, setCurrentSelection] = useState([
+    sessionData.participantId,
+  ]);
   const [chats, setChats] = React.useState([]);
+  const [viewOnlyChat, setViewOnlyChat] = React.useState(null);
+  const [value, setValue] = React.useState(0);
 
   const loadChatBox = () => {
     if (!socket || !chats) {
-      return (<CircularProgress color="secondary"></CircularProgress>);
-    }
-    else return (
-      <ChatBoxContainer>
-          <ChatBox chats={chats} setChats={setChats} socket={socket} sessionInfo={sessionData}/>
-      </ChatBoxContainer>
-    );
+      return <CircularProgress color="secondary"></CircularProgress>;
+    } else
+      return (
+        <ChatBoxContainer>
+          <ChatBox
+            chats={viewOnlyChat ? [...chats, viewOnlyChat] : chats}
+            setChats={setChats}
+            socket={socket}
+            sessionInfo={sessionData}
+            setCurrentSelection={setCurrentSelection}
+            value={value}
+            setValue={setValue}
+          />
+        </ChatBoxContainer>
+      );
   };
 
   useEffect(() => {
@@ -32,6 +44,8 @@ export const SessionPage = () => {
 
   useEffect(() => {
     if (!sessionData) return;
+
+    // establish socket connection
     const newSocket = io.connect("http://localhost:5000", {
       transports: ["websocket"],
     });
@@ -41,6 +55,7 @@ export const SessionPage = () => {
       sessionCode: sessionData.sessionCode,
     });
     setSocket(newSocket);
+
     return () => newSocket.disconnect();
   }, [sessionData]);
 
@@ -49,14 +64,61 @@ export const SessionPage = () => {
     socket.on("updateParticipants", ({ participants }) =>
       setParticipants(participants)
     );
-    socket.on("createdChat", ({ members, sessionId, id, content }) => {
-      console.log([...chats, { members, sessionId, id, content }]);
-      setChats([...chats, { members, sessionId, id, content }]);
+    socket.on("createdChat", (chat) => {
+      setChats([
+        ...chats,
+        {
+          ...chat,
+          members: chat.members.sort((memberA, memberB) => {
+            if (memberA.id < memberB.id) return -1;
+            if (memberB.id < memberA.id) return 1;
+            return 0;
+          }),
+        },
+      ]);
     });
+    socket.on("updateChats", ({ chats }) =>
+      setChats(
+        chats.map((chat) => ({
+          ...chat,
+          members: chat.members.sort((memberA, memberB) => {
+            if (memberA.id < memberB.id) return -1;
+            if (memberB.id < memberA.id) return 1;
+            return 0;
+          }),
+        }))
+      )
+    );
   }, [socket, chats]);
 
+  useEffect(() => {
+    if (currentSelection.length === 1) return;
+    let chatI = -1;
+    const sortedSelection = [...currentSelection].sort().join(",");
+    chats.forEach((chat, i) => {
+      if (chat.members.map((member) => member.id).join(",") === sortedSelection)
+        chatI = i;
+    });
+    if (chatI !== -1) {
+      setValue(chatI);
+      setViewOnlyChat(null);
+    } else {
+      setValue(chats.length);
+      setViewOnlyChat({
+        members: participants
+          .filter((participant) => currentSelection.includes(participant._id))
+          .map((participant) => ({
+            name: participant.name,
+            id: participant._id,
+          })),
+        sessionId: sessionData.sessionId,
+        id: -1,
+        content: [],
+      });
+    }
+  }, [currentSelection]);
+
   const createChat = () => {
-    console.log("creating");
     socket.emit("createChat", {
       members: currentSelection,
       sessionId: sessionData.sessionId,
@@ -65,11 +127,14 @@ export const SessionPage = () => {
   };
 
   const selectCard = (participantId) => {
-    if (currentSelection.includes(participantId) && participantId !== sessionData.participantId)
+    if (
+      currentSelection.includes(participantId) &&
+      participantId !== sessionData.participantId
+    )
       setCurrentSelection(
         currentSelection.filter((pid) => pid !== participantId)
       );
-    else if (participantId !== sessionData.participantId) 
+    else if (participantId !== sessionData.participantId)
       setCurrentSelection(currentSelection.concat(participantId));
   };
 

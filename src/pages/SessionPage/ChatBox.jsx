@@ -3,18 +3,26 @@ import { Tabs, Tab, IconButton } from "@mui/material";
 import { MdSend } from "react-icons/md";
 import styled from "styled-components";
 import { TextField } from "@material-ui/core";
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 
-export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => setValue(newValue);
+export const ChatBox = ({
+  chats,
+  setChats,
+  socket,
+  sessionInfo,
+  setCurrentSelection,
+  value,
+  setValue,
+}) => {
+  const handleChange = (event, newValue) => {
+    setCurrentSelection(chats[newValue].members.map((member) => member.id));
+    setValue(newValue);
+  };
   const [message, setMessage] = React.useState("");
 
   useEffect(() => {
     if (!socket || !chats) return;
-    console.log("HERE");
     socket.on("updatedChat", ({ updateType, updateData, id }) => {
-      console.log("updated chats");
       const newChats = chats.map((chat) => {
         const newChat = { ...chat };
         if (chat.id === id) {
@@ -23,7 +31,6 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
         return newChat;
       });
       setChats(newChats);
-      console.log(newChats);
     });
   }, [socket, chats]);
 
@@ -80,8 +87,12 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
         {chats.map((chat, i) => (
           <Tab
             key={i}
-            style={{ fontSize: "2rem", color: "#5B5B5B" }}
-            label={chat.members.join(", ")}
+            style={{
+              fontSize: "2rem",
+              color: "#5B5B5B",
+              fontStyle: chat.id === -1 ? "italic" : "normal",
+            }}
+            label={chat.members.map((member) => member.name).join(", ")}
           />
         ))}
       </Tabs>
