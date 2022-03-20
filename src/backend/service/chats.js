@@ -42,4 +42,8 @@ const updateChat = async (chatId, updateType, updateData) => {
   else throw new Error("Invalid updateType. updateType not recognized.");
 };
 
-module.exports = { getAllChats, createChat, updateChat };
+const getChatsBySessionId = async (sessionId) => {
+  return await chatsDatabase.getChatsBySessionId(sessionId);
+};
+
+module.exports = { getAllChats, createChat, updateChat, getChatsBySessionId };

@@ -31,12 +31,12 @@ const getSocketIds = async (memberIds) => {
 const getParticipantNames = async (participantIds) => {
   const res = await Promise.all(
     participantIds.map((id) =>
-      Participant.find({
+      Participant.findOne({
         _id: mongoose.Types.ObjectId(id),
       }).exec()
     )
   );
-  return res.map((client) => client[0].name);
+  return res.map((client) => ({ name: client.name, id: client._id }));
 };
 
 const updateParticipantSocketId = async (participantId, socketId) =>
