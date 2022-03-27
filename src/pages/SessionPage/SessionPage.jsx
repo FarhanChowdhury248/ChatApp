@@ -5,6 +5,11 @@ import { ChatBox } from "./ChatBox";
 import io from "socket.io-client";
 import { Button, CircularProgress } from "@mui/material";
 
+const useForceUpdate = () => {
+  const [value, setValue] = useState(0); // integer state
+  return () => setValue((value) => value + 1); // update the state to force render
+};
+
 export const SessionPage = () => {
   const [sessionData] = useState(
     JSON.parse(window.sessionStorage.getItem("sessionData"))
@@ -14,18 +19,27 @@ export const SessionPage = () => {
   const [currentSelection, setCurrentSelection] = useState([
     sessionData.participantId,
   ]);
-  const [chats, setChats] = React.useState([]);
+
+  const chats = React.useRef([]);
+  const forceUpdate = useForceUpdate();
+  const setChats = (newChats) => {
+    chats.current = newChats;
+    forceUpdate();
+  };
+
   const [viewOnlyChat, setViewOnlyChat] = React.useState(null);
   const [value, setValue] = React.useState(0);
 
   const loadChatBox = () => {
-    if (!socket || !chats) {
+    if (!socket || !chats.current) {
       return <CircularProgress color="secondary"></CircularProgress>;
     } else
       return (
         <ChatBoxContainer>
           <ChatBox
-            chats={viewOnlyChat ? [...chats, viewOnlyChat] : chats}
+            chats={
+              viewOnlyChat ? [...chats.current, viewOnlyChat] : chats.current
+            }
             setChats={setChats}
             socket={socket}
             sessionInfo={sessionData}
@@ -65,19 +79,19 @@ export const SessionPage = () => {
       setParticipants(participants)
     );
     socket.on("createdChat", (chat) => {
-      setChats([
-        ...chats,
-        {
-          ...chat,
-          members: chat.members.sort((memberA, memberB) => {
-            if (memberA.id < memberB.id) return -1;
-            if (memberB.id < memberA.id) return 1;
-            return 0;
-          }),
-        },
-      ]);
+      const newChat = {
+        ...chat,
+        members: chat.members.sort((memberA, memberB) => {
+          if (memberA.id < memberB.id) return -1;
+          if (memberB.id < memberA.id) return 1;
+          return 0;
+        }),
+      };
+      setValue(chats.current.length);
+      setChats([...chats.current, newChat]);
+      setViewOnlyChat(null);
     });
-    socket.on("updateChats", ({ chats }) =>
+    socket.on("updateChats", ({ chats }) => {
       setChats(
         chats.map((chat) => ({
           ...chat,
@@ -87,15 +101,30 @@ export const SessionPage = () => {
             return 0;
           }),
         }))
-      )
-    );
-  }, [socket, chats]);
+      );
+      if (chats) setValue(0);
+    });
+    socket.on("updatedChat", ({ updateType, updateData, id }) => {
+      const newChats = chats.current.map((chat) => {
+        const newChat = { ...chat };
+        if (chat.id === id) {
+          newChat.content = chat.content.concat(updateData);
+        }
+        return newChat;
+      });
+      setChats(newChats);
+    });
+  }, [socket]);
 
   useEffect(() => {
-    if (currentSelection.length === 1) return;
+    if (currentSelection.length === 1) {
+      setValue(chats.current.length - 1);
+      setViewOnlyChat(null);
+      return;
+    }
     let chatI = -1;
     const sortedSelection = [...currentSelection].sort().join(",");
-    chats.forEach((chat, i) => {
+    chats.current.forEach((chat, i) => {
       if (chat.members.map((member) => member.id).join(",") === sortedSelection)
         chatI = i;
     });
@@ -103,7 +132,7 @@ export const SessionPage = () => {
       setValue(chatI);
       setViewOnlyChat(null);
     } else {
-      setValue(chats.length);
+      setValue(chats.current.length);
       setViewOnlyChat({
         members: participants
           .filter((participant) => currentSelection.includes(participant._id))
@@ -123,7 +152,6 @@ export const SessionPage = () => {
       members: currentSelection,
       sessionId: sessionData.sessionId,
     });
-    setCurrentSelection([sessionData.participantId]);
   };
 
   const selectCard = (participantId) => {

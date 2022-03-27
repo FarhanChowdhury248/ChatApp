@@ -46,4 +46,14 @@ const getChatsBySessionId = async (sessionId) => {
   return await chatsDatabase.getChatsBySessionId(sessionId);
 };
 
-module.exports = { getAllChats, createChat, updateChat, getChatsBySessionId };
+const getChatsByParticipantId = async (sessionId) => {
+  return await chatsDatabase.getChatsByParticipantId(sessionId);
+};
+
+module.exports = {
+  getAllChats,
+  createChat,
+  updateChat,
+  getChatsBySessionId,
+  getChatsByParticipantId,
+};

@@ -38,10 +38,20 @@ const getChatsBySessionId = async (sessionId) => {
   return res;
 };
 
+const getChatsByParticipantId = async (participantId) => {
+  console.log(participantId);
+  const res = await Chat.find({
+    members: mongoose.Types.ObjectId(participantId),
+  }).exec();
+  console.log(res);
+  return res;
+};
+
 module.exports = {
   getAllChats,
   createChat,
   getChatById,
   addChatMessage,
   getChatsBySessionId,
+  getChatsByParticipantId,
 };

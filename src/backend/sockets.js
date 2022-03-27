@@ -6,14 +6,13 @@ const Participant = require("./models/participant.model");
 const {
   createChat,
   updateChat,
-  getChatsBySessionId,
+  getChatsByParticipantId,
 } = require("./service/chats");
 const {
   getSocketIds,
   updateParticipantSocketId,
   getParticipantNames,
   getParticipantBySocketId,
-  deleteParticipant,
 } = require("./service/participants");
 const {
   getSessionByParticipantId,
@@ -52,7 +51,7 @@ const setupSockets = (server) => {
         const participants = await getRoomParticipants(sessionId);
         const chats = await Promise.all(
           (
-            await getChatsBySessionId(sessionId)
+            await getChatsByParticipantId(participantId)
           ).map(async (chat) => ({
             members: await getParticipantNames(chat.members),
             sessionId,
@@ -64,7 +63,7 @@ const setupSockets = (server) => {
         io.to(roomName).emit("updateParticipants", {
           participants,
         });
-        io.to(roomName).emit("updateChats", {
+        io.to(socket.id).emit("updateChats", {
           chats,
         });
       } catch (e) {
