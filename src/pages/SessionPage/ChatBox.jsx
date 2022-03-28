@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Tabs, Tab, IconButton } from "@mui/material";
 import { MdSend } from "react-icons/md";
 import styled from "styled-components";
@@ -6,8 +6,7 @@ import { TextField } from "@material-ui/core";
 
 export const ChatBox = ({
   chats,
-  socket,
-  sessionInfo,
+  sendMessage,
   setCurrentSelection,
   value,
   setValue,
@@ -17,18 +16,6 @@ export const ChatBox = ({
     setValue(newValue);
   };
   const [message, setMessage] = React.useState("");
-
-  const sendMessage = (chatId) => {
-    socket.emit("updateChat", {
-      updateType: "messageSent",
-      id: chatId,
-      updateData: {
-        senderName: sessionStorage.getItem("current_username"),
-        senderId: sessionInfo.participantId,
-        message: message,
-      },
-    });
-  };
 
   if (!chats || chats.length === 0 || !chats[value])
     return (
@@ -102,7 +89,7 @@ export const ChatBox = ({
         </div>
         <IconButton
           onClick={() => {
-            sendMessage(chats[value].id);
+            sendMessage(chats[value].id, message);
             setMessage("");
           }}
         >

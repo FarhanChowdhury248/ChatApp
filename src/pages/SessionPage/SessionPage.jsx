@@ -41,8 +41,7 @@ export const SessionPage = () => {
               viewOnlyChat ? [...chats.current, viewOnlyChat] : chats.current
             }
             setChats={setChats}
-            socket={socket}
-            sessionInfo={sessionData}
+            sendMessage={sendMessage}
             setCurrentSelection={setCurrentSelection}
             value={value}
             setValue={setValue}
@@ -154,6 +153,27 @@ export const SessionPage = () => {
     });
   };
 
+  const sendMessage = (chatId, message) => {
+    const messageData = {
+      senderName: sessionStorage.getItem("current_username"),
+      senderId: sessionData.participantId,
+      message: message,
+    };
+    if (chatId === -1) {
+      socket.emit("createChat", {
+        members: currentSelection,
+        sessionId: sessionData.sessionId,
+        initialContent: messageData,
+      });
+    } else {
+      socket.emit("updateChat", {
+        updateType: "messageSent",
+        id: chatId,
+        updateData: messageData,
+      });
+    }
+  };
+
   const selectCard = (participantId) => {
     if (
       currentSelection.includes(participantId) &&
@@ -198,20 +218,6 @@ export const SessionPage = () => {
                 />
               </CardContainer>
             ))}
-          </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              disabled={currentSelection.length < 2}
-              onClick={createChat}
-              style={{
-                backgroundColor:
-                  currentSelection.length < 2 ? "#A1A1A1" : "#EF5DF1",
-                fontSize: "2rem",
-                width: "100%",
-              }}
-            >
-              Create Chat
-            </Button>
           </div>
         </CardsContainer>
         {loadChatBox()}
