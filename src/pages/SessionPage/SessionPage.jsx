@@ -53,6 +53,10 @@ export const SessionPage = () => {
       console.log([...chats, { members, sessionId, id, content }]);
       setChats([...chats, { members, sessionId, id, content }]);
     });
+
+    socket.on("disconnect", () => {
+      createChat();
+    });
   }, [socket, chats]);
 
   const createChat = () => {

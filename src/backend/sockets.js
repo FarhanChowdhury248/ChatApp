@@ -7,6 +7,7 @@ const { createChat, updateChat } = require("./service/chats");
 const {
   getSocketIds,
   updateParticipantSocketId,
+  getAllParticipants,
   getParticipantNames,
   getParticipantBySocketId,
   deleteParticipant,
@@ -16,6 +17,9 @@ const {
   appendSessionParticipant,
   removeSessionParticipant,
 } = require("./service/sessions");
+const {
+  deleteSession
+} = require("./database/sessions");
 
 const getRoomName = (code) => "Room: " + code;
 
@@ -68,6 +72,8 @@ const setupSockets = (server) => {
           participant.id.toString()
         );
         await deleteParticipant(participant.id.toString());
+
+        if (!getAllParticipants()) deleteSession(participantSession.id);
       } catch (e) {
         console.error(e);
       }
