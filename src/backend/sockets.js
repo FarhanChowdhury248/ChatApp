@@ -3,13 +3,16 @@ const socket = require("socket.io");
 const Session = require("./models/session.model");
 const Participant = require("./models/participant.model");
 
-const { createChat, updateChat } = require("./service/chats");
+const {
+  createChat,
+  updateChat,
+  getChatsByParticipantId,
+} = require("./service/chats");
 const {
   getSocketIds,
   updateParticipantSocketId,
   getParticipantNames,
   getParticipantBySocketId,
-  deleteParticipant,
 } = require("./service/participants");
 const {
   getSessionByParticipantId,
@@ -46,9 +49,22 @@ const setupSockets = (server) => {
         socket.join(roomName);
 
         const participants = await getRoomParticipants(sessionId);
+        const chats = await Promise.all(
+          (
+            await getChatsByParticipantId(participantId)
+          ).map(async (chat) => ({
+            members: await getParticipantNames(chat.members),
+            sessionId,
+            id: chat._id.toString(),
+            content: chat.messages,
+          }))
+        );
 
         io.to(roomName).emit("updateParticipants", {
           participants,
+        });
+        io.to(socket.id).emit("updateChats", {
+          chats,
         });
       } catch (e) {
         console.error(e);
@@ -67,7 +83,7 @@ const setupSockets = (server) => {
           participantSession.id.toString(),
           participant.id.toString()
         );
-        await deleteParticipant(participant.id.toString());
+        // await deleteParticipant(participant.id.toString());
       } catch (e) {
         console.error(e);
       }

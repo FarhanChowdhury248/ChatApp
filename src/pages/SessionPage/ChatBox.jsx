@@ -3,41 +3,19 @@ import { Tabs, Tab, IconButton } from "@mui/material";
 import { MdSend } from "react-icons/md";
 import styled from "styled-components";
 import { TextField } from "@material-ui/core";
-import { useEffect, useState, useRef } from "react";
 
-export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => setValue(newValue);
-  const [message, setMessage] = React.useState("");
-
-  useEffect(() => {
-    if (!socket || !chats) return;
-    console.log("HERE");
-    socket.on("updatedChat", ({ updateType, updateData, id }) => {
-      console.log("updated chats");
-      const newChats = chats.map((chat) => {
-        const newChat = { ...chat };
-        if (chat.id === id) {
-          newChat.content = chat.content.concat(updateData);
-        }
-        return newChat;
-      });
-      setChats(newChats);
-      console.log(newChats);
-    });
-  }, [socket, chats]);
-
-  const sendMessage = (chatId) => {
-    socket.emit("updateChat", {
-      updateType: "messageSent",
-      id: chatId,
-      updateData: {
-        senderName: sessionStorage.getItem("current_username"),
-        senderId: sessionInfo.participantId,
-        message: message,
-      },
-    });
+export const ChatBox = ({
+  chats,
+  sendMessage,
+  setCurrentSelection,
+  value,
+  setValue,
+}) => {
+  const handleChange = (event, newValue) => {
+    setCurrentSelection(chats[newValue].members.map((member) => member.id));
+    setValue(newValue);
   };
+  const [message, setMessage] = React.useState("");
 
   if (!chats || chats.length === 0 || !chats[value])
     return (
@@ -80,8 +58,12 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
         {chats.map((chat, i) => (
           <Tab
             key={i}
-            style={{ fontSize: "2rem", color: "#5B5B5B" }}
-            label={chat.members.join(", ")}
+            style={{
+              fontSize: "2rem",
+              color: "#5B5B5B",
+              fontStyle: chat.id === -1 ? "italic" : "normal",
+            }}
+            label={chat.members.map((member) => member.name).join(", ")}
           />
         ))}
       </Tabs>
@@ -107,7 +89,7 @@ export const ChatBox = ({ chats, setChats, socket, sessionInfo }) => {
         </div>
         <IconButton
           onClick={() => {
-            sendMessage(chats[value].id);
+            sendMessage(chats[value].id, message);
             setMessage("");
           }}
         >

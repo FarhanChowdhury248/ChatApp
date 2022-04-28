@@ -24,11 +24,34 @@ const addChatMessage = async (chatId, messagePayload) => {
   const chat = await getChatById(chatId);
   const newMessage = new Message({
     sender: messagePayload.sender,
-    message: messagePayload.message
+    message: messagePayload.message,
   });
-  
+
   chat.messages = [...chat.messages, newMessage];
   await chat.save();
 };
 
-module.exports = { getAllChats, createChat, getChatById, addChatMessage };
+const getChatsBySessionId = async (sessionId) => {
+  const res = await Chat.find({
+    sessionId: mongoose.Types.ObjectId(sessionId),
+  }).exec();
+  return res;
+};
+
+const getChatsByParticipantId = async (participantId) => {
+  console.log(participantId);
+  const res = await Chat.find({
+    members: mongoose.Types.ObjectId(participantId),
+  }).exec();
+  console.log(res);
+  return res;
+};
+
+module.exports = {
+  getAllChats,
+  createChat,
+  getChatById,
+  addChatMessage,
+  getChatsBySessionId,
+  getChatsByParticipantId,
+};

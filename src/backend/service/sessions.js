@@ -57,7 +57,7 @@ const removeSessionParticipant = async (sessionId, participantId) => {
     );
   await sessionDatabase.removeSessionParticipant(sessionId, participantId);
   const session = await getSessionById(sessionId);
-  if (session.members.length === 0) sessionDatabase.deleteSession(sessionId);
+  // if (session.members.length === 0) sessionDatabase.deleteSession(sessionId);
 };
 
 module.exports = {
