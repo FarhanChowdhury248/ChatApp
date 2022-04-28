@@ -71,6 +71,10 @@ const setupSockets = (server) => {
           participantSession.id.toString(),
           participant.id.toString()
         );
+        participant.socketId = null;
+        setTimeout(() => {
+          if (participant.socketId === null) deleteParticipant(participant.id.toString());
+        }, 300000);
         await deleteParticipant(participant.id.toString());
 
         if (!getAllParticipants()) deleteSession(participantSession.id);
