@@ -56,7 +56,7 @@ export const SessionPage = () => {
 
     socket.on("disconnect", () => {
       createChat();
-    });
+    }); 
   }, [socket, chats]);
 
   const createChat = () => {

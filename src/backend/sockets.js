@@ -78,6 +78,14 @@ const setupSockets = (server) => {
         await deleteParticipant(participant.id.toString());
 
         if (!getAllParticipants()) deleteSession(participantSession.id);
+
+        else {
+          const participants = await getRoomParticipants(participantSession.id);
+          const roomName = getRoomName(participantSession.id);
+          io.to(roomName).emit("updateParticipants", {
+            participants,
+          });
+        }
       } catch (e) {
         console.error(e);
       }
