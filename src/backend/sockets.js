@@ -41,7 +41,7 @@ const setupSockets = (server) => {
   io.on("connection", (socket) => {
     console.log("made connection: " + socket.id);
 
-    socket.on("joinRoom", async ({ sessionId, participantId, sessionCode }) => {
+    socket.on("joinRoom", async ({ sessionId, participantId, participantName, sessionCode }) => {
       try {
         await updateParticipantSocketId(participantId, socket.id);
         await appendSessionParticipant(sessionCode, participantId);
@@ -53,6 +53,7 @@ const setupSockets = (server) => {
 
         io.to(roomName).emit("updateParticipants", {
           participants,
+          participantName,
         });
       } catch (e) {
         console.error(e);
@@ -82,8 +83,9 @@ const setupSockets = (server) => {
         else {
           const participants = await getRoomParticipants(participantSession.id);
           const roomName = getRoomName(participantSession.id);
-          io.to(roomName).emit("updateParticipants", {
+          io.to(roomName).emit("deleteParticipant", {
             participants,
+            participant,
           });
         }
       } catch (e) {
