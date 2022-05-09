@@ -16,6 +16,9 @@ const {
   getParticipantBySocketId,
 } = require("./service/participants");
 const {
+  deleteParticipant,
+} = require("./database/participants");
+const {
   getSessionByParticipantId,
   appendSessionParticipant,
   removeSessionParticipant,
@@ -89,13 +92,11 @@ const setupSockets = (server) => {
           participant.id.toString()
         );
         participant.socketId = null;
-        setTimeout(() => {
-          if (participant.socketId === null) deleteParticipant(participant.id.toString());
-        }, 300000);
-        await deleteParticipant(participant.id.toString());
+        updateParticipantSocketId(participant.id.toString(), null);
 
-        if (!getAllParticipants()) deleteSession(participantSession.id);
-
+        console.log(getAllParticipants());
+        if (!(await getAllParticipants())) deleteSession(participantSession.id.toString());
+        
         else {
           const participants = await getRoomParticipants(participantSession.id);
           const roomName = getRoomName(participantSession.id);
@@ -103,7 +104,12 @@ const setupSockets = (server) => {
             participants,
             participant,
           });
+
+          setTimeout(() => {
+            if (participant.socketId === null) deleteParticipant(participant.id.toString());
+          }, 10000);
         }
+        
       } catch (e) {
         console.error(e);
       }
