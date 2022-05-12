@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from 'react-simple-toasts';
 import styled from "styled-components";
 import { ParticipantCard } from "./ParticipantCard";
 import { ChatBox } from "./ChatBox";
@@ -13,7 +14,7 @@ const useForceUpdate = () => {
 export const SessionPage = () => {
   const [sessionData] = useState(
     JSON.parse(window.sessionStorage.getItem("sessionData"))
-  );
+  );  
   const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [currentSelection, setCurrentSelection] = useState([
@@ -65,6 +66,7 @@ export const SessionPage = () => {
     newSocket.emit("joinRoom", {
       sessionId: sessionData.sessionId,
       participantId: sessionData.participantId,
+      participantName: window.sessionStorage.getItem("current_username"),
       sessionCode: sessionData.sessionCode,
     });
     setSocket(newSocket);
@@ -74,9 +76,17 @@ export const SessionPage = () => {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("updateParticipants", ({ participants }) =>
-      setParticipants(participants)
-    );
+    
+    socket.on("updateParticipants", ({ participants, participantName }) => {
+      setParticipants(participants);
+      toast(`${participantName} has joined.`, { time: 3000, clickClosable: true });
+    });
+
+    socket.on("deleteParticipant", ({ participants, participant }) => {
+      setParticipants(participants);
+      toast(`${participant.name} has disconnected.`, { time: 3000, clickClosable: true });
+    });
+
     socket.on("createdChat", (chat) => {
       const newChat = {
         ...chat,

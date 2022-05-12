@@ -6963,10 +6963,10 @@
   "resolved" "https://registry.npmjs.org/node-releases/-/node-releases-2.0.1.tgz"
   "version" "2.0.1"
 
-"nodemon@^2.0.15":
-  "integrity" "sha512-gdHMNx47Gw7b3kWxJV64NI+Q5nfl0y5DgDbiVtShiwa7Z0IZ07Ll4RLFo6AjrhzMtoEZn5PDE3/c2AbVsiCkpA=="
-  "resolved" "https://registry.npmjs.org/nodemon/-/nodemon-2.0.15.tgz"
-  "version" "2.0.15"
+"nodemon@^2.0.16":
+  "integrity" "sha512-zsrcaOfTWRuUzBn3P44RDliLlp263Z/76FPoHFr3cFFkOz0lTPAcIw8dCzfdVIx/t3AtDYCZRCDkoCojJqaG3w=="
+  "resolved" "https://registry.npmjs.org/nodemon/-/nodemon-2.0.16.tgz"
+  "version" "2.0.16"
   dependencies:
     "chokidar" "^3.5.2"
     "debug" "^3.2.7"
@@ -8185,7 +8185,7 @@
     "strip-ansi" "^6.0.1"
     "text-table" "^0.2.0"
 
-"react-dom@*", "react-dom@^16.8.0 || ^17.0.0", "react-dom@^17.0.2", "react-dom@>= 16.8.0", "react-dom@>=16.6.0":
+"react-dom@*", "react-dom@^16.8.0 || ^17.0.0", "react-dom@^17.0.2", "react-dom@>= 16.8.0", "react-dom@>=16.6.0", "react-dom@>=16.8.0":
   "integrity" "sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz"
   "version" "17.0.2"
@@ -8312,6 +8312,11 @@
     "workbox-webpack-plugin" "^6.4.1"
   optionalDependencies:
     "fsevents" "^2.3.2"
+
+"react-simple-toasts@^2.2.3":
+  "integrity" "sha512-z6FX3CC0bSQ9eEDN8c/R8yb+eUyJwa8osb6vDMN1JS5fOl5+7fI7Eu/aN0Rxr7+RtoSgNfwFuVaz9AAju1JqYw=="
+  "resolved" "https://registry.npmjs.org/react-simple-toasts/-/react-simple-toasts-2.2.3.tgz"
+  "version" "2.2.3"
 
 "react-transition-group@^4.4.0", "react-transition-group@^4.4.2":
   "integrity" "sha512-/RNYfRAMlZwDSr6z4zNKV6xu53/e2BuaBbGhbyYIXTrmgu/bGHzmqOs7mJSJBHy9Ud+ApHx3QjrkKSp1pxvlFg=="

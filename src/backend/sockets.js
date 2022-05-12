@@ -11,14 +11,22 @@ const {
 const {
   getSocketIds,
   updateParticipantSocketId,
+  getAllParticipants,
   getParticipantNames,
   getParticipantBySocketId,
 } = require("./service/participants");
+const {
+  deleteParticipant,
+} = require("./database/participants");
 const {
   getSessionByParticipantId,
   appendSessionParticipant,
   removeSessionParticipant,
 } = require("./service/sessions");
+const {
+  deleteSession,
+  getSession,
+} = require("./database/sessions");
 
 const getRoomName = (code) => "Room: " + code;
 
@@ -40,7 +48,7 @@ const setupSockets = (server) => {
   io.on("connection", (socket) => {
     console.log("made connection: " + socket.id);
 
-    socket.on("joinRoom", async ({ sessionId, participantId, sessionCode }) => {
+    socket.on("joinRoom", async ({ sessionId, participantId, participantName, sessionCode }) => {
       try {
         await updateParticipantSocketId(participantId, socket.id);
         await appendSessionParticipant(sessionCode, participantId);
@@ -62,6 +70,7 @@ const setupSockets = (server) => {
 
         io.to(roomName).emit("updateParticipants", {
           participants,
+          participantName,
         });
         io.to(socket.id).emit("updateChats", {
           chats,
@@ -83,7 +92,29 @@ const setupSockets = (server) => {
           participantSession.id.toString(),
           participant.id.toString()
         );
-        // await deleteParticipant(participant.id.toString());
+        participant.socketId = null;
+        updateParticipantSocketId(participant.id.toString(), null);
+
+        const session = await getSession(participantSession.sessionCode);
+        console.log(session);
+        if (session.members.length === 0) {
+          deleteParticipant(participant.id.toString());
+          deleteSession(participantSession.id.toString());
+        }
+        
+        else {
+          const participants = await getRoomParticipants(participantSession.id);
+          const roomName = getRoomName(participantSession.id);
+          io.to(roomName).emit("deleteParticipant", {
+            participants,
+            participant,
+          });
+
+          setTimeout(() => {
+            if (participant.socketId === null) deleteParticipant(participant.id.toString());
+          }, 10000);
+        }
+        
       } catch (e) {
         console.error(e);
       }
