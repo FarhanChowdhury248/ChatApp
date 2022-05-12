@@ -24,7 +24,8 @@ const {
   removeSessionParticipant,
 } = require("./service/sessions");
 const {
-  deleteSession
+  deleteSession,
+  getSession,
 } = require("./database/sessions");
 
 const getRoomName = (code) => "Room: " + code;
@@ -94,8 +95,12 @@ const setupSockets = (server) => {
         participant.socketId = null;
         updateParticipantSocketId(participant.id.toString(), null);
 
-        console.log(getAllParticipants());
-        if (!(await getAllParticipants())) deleteSession(participantSession.id.toString());
+        const session = await getSession(participantSession.sessionCode);
+        console.log(session);
+        if (session.members.length === 0) {
+          deleteParticipant(participant.id.toString());
+          deleteSession(participantSession.id.toString());
+        }
         
         else {
           const participants = await getRoomParticipants(participantSession.id);
